@@ -1,19 +1,22 @@
 name = "RecurrenceMicrostatesAnalysis"
 uuid = "cb83a08b-85c6-4e94-91aa-4e946c7d4f0c"
-version = "0.3.1"
+version = "0.4.0-dev"
 repo = "https://github.com/DynamicsUFPR/RecurrenceMicrostatesAnalysis.jl"
 
 [deps]
+ComplexityMeasures = "ab4b797d-85ee-42ba-b621-05d793b346a2"
 Distances = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
-Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+GPUArraysCore = "46192b85-c4d5-4398-a991-12ede77f4527"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
+StateSpaceSets = "40b095a5-5852-4c12-98c7-d43bf788e795"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [compat]
+ComplexityMeasures = "3.8.5"
 Distances = "0.10.12"
-Statistics = "1.10.0"
-julia = "1.10"
-
-[extras]
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-
-[targets]
-test = ["Test"]
+GPUArraysCore = "0.2.0"
+Random = "1.11.0"
+Reexport = "1.2.2"
+StateSpaceSets = "2.5.3"
+StaticArrays = "1.9.15"
