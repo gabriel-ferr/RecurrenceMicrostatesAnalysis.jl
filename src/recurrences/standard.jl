@@ -8,8 +8,8 @@ struct Standard{F <: Real, M <: Metric} <: RecurrenceExpression
     metric::M
 end
 
-function Standard(ε::Real)
-     return Standard(ε, DEFAULT_METRIC)
+function Standard(ε::Real; metric::Metric = DEFAULT_METRIC)
+     return Standard(ε, metric)
 end
 
 ##########################################################################################
