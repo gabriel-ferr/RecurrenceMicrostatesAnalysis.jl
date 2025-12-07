@@ -11,5 +11,5 @@ end
 defaultname(file) = uppercasefirst(replace(splitext(basename(file))[1], '_' => ' '))
 
 @testset "RecurrenceMicrostatesAnalysis tests" begin
-    
+    testfile("distributions.jl")
 end

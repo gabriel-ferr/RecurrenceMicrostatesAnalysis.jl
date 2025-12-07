@@ -12,6 +12,12 @@ Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 StateSpaceSets = "40b095a5-5852-4c12-98c7-d43bf788e795"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
+
 [compat]
 ComplexityMeasures = "3.8.5"
 Distances = "0.10.12"

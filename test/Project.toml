@@ -1,7 +1,0 @@
-[deps]
-DynamicalSystems = "61744808-ddfa-5f27-97ff-6e42cc95d634"
-RecurrenceMicrostatesAnalysis = "cb83a08b-85c6-4e94-91aa-4e946c7d4f0c"
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-
-[sources]
-RecurrenceMicrostatesAnalysis = {rev = "main", url = "/Users/gabrielferreira/RecurrenceMicrostatesAnalysis.jl"}
