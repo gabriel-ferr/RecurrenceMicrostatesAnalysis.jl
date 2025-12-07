@@ -124,6 +124,61 @@ distribution(
     threads::Int = Threads.nthreads()
 ) = distribution(CPUCore(Rect(expr, n), sampling), x, y; threads = threads)
 
+distribution(
+    x::StateSpaceSet,
+    y::StateSpaceSet,
+    ε::Float64,
+    n::Int;
+    rate::Float64 = 0.05,
+    sampling::SamplingMode = SRandom(rate),
+    threads::Int = Threads.nthreads(),
+    metric::Metric = DEFAULT_METRIC
+) = distribution(x, y, Standard(ε; metric = metric), n; rate = rate, sampling = sampling, threads = threads)
+
+distribution(
+    x::StateSpaceSet,
+    shape::MotifShape;
+    rate::Float64 = 0.05,
+    sampling::SamplingMode = SRandom(rate),
+    threads::Int = Threads.nthreads()
+) = distribution(x, x, shape; rate = rate, sampling = sampling, threads = threads)
+
+distribution(
+    x::StateSpaceSet,
+    expr::RecurrenceExpression,
+    n::Int;
+    rate::Float64 = 0.05,
+    sampling::SamplingMode = SRandom(rate),
+    threads::Int = Threads.nthreads()
+) = distribution(x, x, expr, n; rate = rate, sampling = sampling, threads = threads)
+
+distribution(
+    x::StateSpaceSet,
+    ε::Float64,
+    n::Int;
+    rate::Float64 = 0.05,
+    sampling::SamplingMode = SRandom(rate),
+    threads::Int = Threads.nthreads(),
+    metric::Metric = DEFAULT_METRIC
+) = distribution(x, x, ε, n; rate = rate, sampling = sampling, threads = threads, metric = metric)
+
+distribution(
+    x::AbstractArray{<:Real},
+    y::AbstractArray{<:Real},
+    shape::MotifShape;
+    rate::Float64 = 0.05,
+    sampling::SamplingMode = SRandom(rate),
+    threads::Int = Threads.nthreads()
+) = distribution(CPUCore(shape, sampling), x, y; threads = threads)
+
+distribution(
+    x::AbstractArray{<:Real},
+    shape::MotifShape;
+    rate::Float64 = 0.05,
+    sampling::SamplingMode = SRandom(rate),
+    threads::Int = Threads.nthreads()
+) = distribution(x, x, shape; rate = rate, sampling = sampling, threads = threads)
+
 function distribution(
     core::CPUCore,
     x,
