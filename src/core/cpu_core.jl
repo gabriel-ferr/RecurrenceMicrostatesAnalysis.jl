@@ -186,6 +186,5 @@ function distribution(
     threads = Threads.nthreads()
 )
     hist = histogram(core, x, y; threads = threads)
-    c = Counts(eachindex(hist), hist)
-    return Probabilities(c)
+    return Probabilities(hist)
 end
