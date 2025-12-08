@@ -29,23 +29,6 @@ end
     return UInt8(distance ≤ expr.ε)
 end
 #.........................................................................................
-#   Based on time series: (GPU)
-#.........................................................................................
-@inline function recurrence(
-    expr::Standard,
-    x::AbstractGPUVector{SVector{DX, Float32}},
-    y::AbstractGPUVector{SVector{DY, Float32}},
-    i::Int32,
-    j::Int32,
-) where {DX, DY}
-    
-    @inbounds xi = x[i]
-    @inbounds yj = y[j]
-
-    distance = @inbounds evaluate(expr.metric, xi, yj)
-    return UInt8(distance ≤ expr.ε)
-end
-#.........................................................................................
 #   Based on spatial data: (CPU only)
 #.........................................................................................
 @inline function recurrence(

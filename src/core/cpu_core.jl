@@ -25,7 +25,7 @@ function histogram(
     samples = get_num_samples(core.sampling, space)
 
     #   Allocate memory
-    pv = get_power_vector(core.shape)
+    pv = get_power_vector(core, core.shape)
     offsets = get_offsets(core, core.shape)
 
     #   Compute the histogram
@@ -71,7 +71,7 @@ function histogram(
     @assert length(space.space) == length(core.shape.structure)
 
     #   Allocate memory
-    pv = get_power_vector(core.shape)
+    pv = get_power_vector(core, core.shape)
 
     #   Compute the histogram
     chunk = ceil(Int, samples / threads)

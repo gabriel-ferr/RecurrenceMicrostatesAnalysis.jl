@@ -11,35 +11,23 @@ abstract type RecurrenceExpression end
 #   Based on time series: (CPU)
 #.........................................................................................
 function recurrence(
-    expr::E,
+    expr::RecurrenceExpression,
     x::StateSpaceSet,
     y::StateSpaceSet,
-    i::Int,
-    j::Int,
-) where {E <: RecurrenceExpression}
-    throw("The recurrence computation is not implemented to a recurrence expression of type '$(typeof(expr))' with input types: \n\t x: '$(typeof(x))'\n\t y: '$(typeof(y))')")
+    ::Int,
+    ::Int,
+)
+    error("The recurrence computation is not implemented to a recurrence expression of type '$(typeof(expr))' with input types: \n\t x: '$(typeof(x))'\n\t y: '$(typeof(y))')")
 end
 #.........................................................................................
-#   Based on time series: (GPU)
+#   Based on spatial data: (CPU)
 #.........................................................................................
 function recurrence(
-    expr::E,
-    x::AbstractGPUVector{SVector{DX, Float32}},
-    y::AbstractGPUVector{SVector{DY, Float32}},
-    i::Int32,
-    j::Int32,
-) where {E <: RecurrenceExpression, DX, DY}
-    throw("The recurrence computation is not implemented to a recurrence expression of type '$(typeof(expr))' with input types: \n\t x: '$(typeof(x))'\n\t y: '$(typeof(y))')")
-end
-#.........................................................................................
-#   Based on spatial data: (CPU only)
-#.........................................................................................
-function recurrence(
-    expr::E,
+    expr::RecurrenceExpression,
     x::AbstractArray{<:Real},
     y::AbstractArray{<:Real},
-    i::NTuple{N, Int}, 
-    j::NTuple{M, Int},
-) where {E <: RecurrenceExpression, N, M} 
-    throw("The recurrence computation is not implemented to a recurrence expression of type '$(typeof(expr))' with input types: \n\t x: '$(typeof(x))'\n\t y: '$(typeof(y))')")
+    ::NTuple{N, Int}, 
+    ::NTuple{M, Int},
+) where {N, M} 
+    error("The recurrence computation is not implemented to a recurrence expression of type '$(typeof(expr))' with input types: \n\t x: '$(typeof(x))'\n\t y: '$(typeof(y))')")
 end

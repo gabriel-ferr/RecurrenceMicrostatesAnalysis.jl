@@ -59,16 +59,16 @@ end
 ##########################################################################################
 @inline function compute_motif(
     shape::Rect2{W, H, B, E},
-    x::Union{StateSpaceSet, AbstractGPUVector{SVector{DX, Float32}}},
-    y::Union{StateSpaceSet, AbstractGPUVector{SVector{DY, Float32}}},
-    i::I,
-    j::I,
-    power_vector::SVector{N, I},
-    offsets::SVector{N, SVector{2, I}}
-) where {W, H, B, E, DX, DY, I <: Integer, N}
+    x::StateSpaceSet,
+    y::StateSpaceSet,
+    i::Int,
+    j::Int,
+    power_vector::SVector{N, Int},
+    offsets::SVector{N, SVector{2, Int}}
+) where {W, H, B, E, N}
 
     @inbounds @fastmath begin
-        index::I = 0
+        index = 0
         
         for m in eachindex(power_vector)
             dw, dh = offsets[m]
@@ -79,22 +79,6 @@ end
     end
 end
 
-@generated function get_histogram_size(::Rect2{W, H, B, E}) where {W, H, B, E}
-    size = B^(W*H)
-    return :( $size )
-end
-
-@generated function get_power_vector(::Rect2{W, H, B, E}) where {W, H, B, E}
-    N = W * H
-    expr = :(SVector{$N}( $([:(B^$i) for i in 0:(N-1)]... ) ))
-    return expr
-end
-
-@generated function get_offsets(::CPUCore, ::Rect2{W, H, B, E}) where {W, H, B, E}
-    N = W * H
-    elems = [ :(SVector{2, Int}($w, $h)) for w in 0:(W - 1) for h in 0:(H - 1)]
-    return :( SVector{$N, $(SVector{2, Int})}( $(elems...) ) )
-end
 ##########################################################################################
 #   Implementations: RectN
 ##########################################################################################
@@ -132,12 +116,32 @@ end
     return index + 1
 end
 
+##########################################################################################
+#   Implementations: utils — histogram size, power vector, and offsets
+##########################################################################################
+@generated function get_histogram_size(::Rect2{W, H, B, E}) where {W, H, B, E}
+    size = B^(W*H)
+    return :( $size )
+end
+
+@generated function get_power_vector(::CPUCore, ::Rect2{W, H, B, E}) where {W, H, B, E}
+    N = W * H
+    expr = :(SVector{$N}( $([:(B^$i) for i in 0:(N-1)]... ) ))
+    return expr
+end
+
+@generated function get_offsets(::CPUCore, ::Rect2{W, H, B, E}) where {W, H, B, E}
+    N = W * H
+    elems = [ :(SVector{2, Int}($w, $h)) for w in 0:(W - 1) for h in 0:(H - 1)]
+    return :( SVector{$N, $(SVector{2, Int})}( $(elems...) ) )
+end
+
 function get_histogram_size(shape::RectN{D, B, E}) where {D, B, E}
     size = B^(prod(shape.structure))
     return size
 end
 
-function get_power_vector(shape::RectN{D, B, E}) where {D, B, E}
+function get_power_vector(::CPUCore, shape::RectN{D, B, E}) where {D, B, E}
     N = prod(shape.structure)
     return SVector{N}((B^i for i in 0:(N-1))...)
 end
