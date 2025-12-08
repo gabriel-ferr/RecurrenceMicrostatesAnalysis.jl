@@ -3,7 +3,7 @@ export CPUCore
 ##########################################################################################
 #   RMACore: CPU
 ##########################################################################################
-struct CPUCore{M <: MotifShape, S <: SamplingMode} <: RMACore
+struct CPUCore{M<:MotifShape, S<:SamplingMode} <: RMACore
     shape::M
     sampling::S
 end

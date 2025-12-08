@@ -19,9 +19,9 @@ end
 
 SamplingSpace(
     shape::MotifShape, 
-    x::Union{StateSpaceSet, AbstractGPUVector{SVector{DX, Float32}}}, 
-    y::Union{StateSpaceSet, AbstractGPUVector{SVector{DY, Float32}}}
-) where {DX, DY} = throw("The sampling space is not implemented for a motif shape of type '$(typeof(shape))' with input types: \n\t x: '$(typeof(x))'\n\t y: '$(typeof(y))')")
+    x::Union{StateSpaceSet, AbstractGPUVector{SVector{N, Float32}}}, 
+    y::Union{StateSpaceSet, AbstractGPUVector{SVector{N, Float32}}}
+) where {N} = throw("The sampling space is not implemented for a motif shape of type '$(typeof(shape))' with input types: \n\t x: '$(typeof(x))'\n\t y: '$(typeof(y))')")
 #.........................................................................................
 #   Based on spatial data: SRP & CSRP (CPU)
 #.........................................................................................

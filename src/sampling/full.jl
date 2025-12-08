@@ -16,6 +16,15 @@ function get_sample(::CPUCore, ::Full, space::SSRect2, _, m)
 
     return i, j
 end
+#.........................................................................................
+#   Based on time series: (GPU)
+#.........................................................................................
+function get_sample(::GPUCore, ::Full, space::SSRect2, _, m)
+    i = Int32((m - 1) % space.W)
+    j = Int32((m - 1) ÷ space.W)
+
+    return i, j
+end
 
 ##########################################################################################
 #   Implementations: Utils

@@ -9,11 +9,13 @@ end RecurrenceMicrostatesAnalysis
 ##########################################################################################
 #   Packages and constants
 ##########################################################################################
+using Atomix
 using ComplexityMeasures
 using Distances
 using GPUArraysCore
 using KernelAbstractions
 using Random
+using Random123
 using Reexport
 using StaticArrays
 
@@ -32,6 +34,7 @@ include("core/sampling.jl")
 
 include("core/cpu_core.jl")
 include("core/gpu/gpu_core.jl")
+include("core/gpu/gpu_metric.jl")
 
 ##########################################################################################
 #   Recurrence functions, motif shapes, and sampling modes
@@ -47,5 +50,6 @@ include("sampling/sampling.jl")
 ##########################################################################################
 #   Utils
 ##########################################################################################
+include("utils/gpu_metrics/gpu_metrics.jl")
 
 end

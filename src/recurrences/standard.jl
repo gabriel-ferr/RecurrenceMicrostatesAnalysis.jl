@@ -11,7 +11,6 @@ end
 function Standard(ε::Real; metric::Metric = DEFAULT_METRIC)
      return Standard(ε, metric)
 end
-
 ##########################################################################################
 #   Implementations
 ##########################################################################################
@@ -24,8 +23,14 @@ end
     i::Int,
     j::Int,
 )
-
     distance = @inbounds evaluate(expr.metric, x.data[i], y.data[j])
+    return UInt8(distance ≤ expr.ε)
+end
+#.........................................................................................
+#   Based on time series: (GPU)
+#.........................................................................................
+@inline function gpu_recurrence(expr::Standard, x, y, i, j, n)
+    distance = gpu_evaluate(expr.metric, x, y, i, j, n)
     return UInt8(distance ≤ expr.ε)
 end
 #.........................................................................................
@@ -38,7 +43,6 @@ end
     i::NTuple{N, Int}, 
     j::NTuple{M, Int},
 ) where {N, M} 
-    
     distance = @inbounds evaluate(expr.metric, view(x, :, i...), view(y, :, j...))
     return UInt8(distance ≤ expr.ε)
 end

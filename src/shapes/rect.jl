@@ -31,9 +31,9 @@ Rect(expr::E, structure::NTuple{D, Int}; B = 2) where {D, E <: RecurrenceExpress
 #.........................................................................................
 SamplingSpace(
     ::Rect2{W, H, B, E}, 
-    x::Union{StateSpaceSet, AbstractGPUVector{SVector{DX, Float32}}}, 
-    y::Union{StateSpaceSet, AbstractGPUVector{SVector{DY, Float32}}}
-) where {W, H, B, E, DX, DY} = SSRect2(length(x) - W, length(y) - H)
+    x::Union{StateSpaceSet, AbstractGPUVector{SVector{N, Float32}}}, 
+    y::Union{StateSpaceSet, AbstractGPUVector{SVector{N, Float32}}}
+) where {W, H, B, E, N} = SSRect2(length(x) - W, length(y) - H)
 #.........................................................................................
 #   Based on spatial data: (CPU only)
 #.........................................................................................
@@ -57,6 +57,8 @@ end
 ##########################################################################################
 #   Implementations: Rect2
 ##########################################################################################
+#   Based on time series: (CPU)
+#.........................................................................................
 @inline function compute_motif(
     shape::Rect2{W, H, B, E},
     x::StateSpaceSet,
@@ -67,18 +69,32 @@ end
     offsets::SVector{N, SVector{2, Int}}
 ) where {W, H, B, E, N}
 
-    @inbounds @fastmath begin
+    @inbounds begin
         index = 0
         
         for m in eachindex(power_vector)
             dw, dh = offsets[m]
-            index += recurrence(shape.expr, x, y, i + dw, j + dh) * power_vector[m]
+            @fastmath index += recurrence(shape.expr, x, y, i + dw, j + dh) * power_vector[m]
         end
 
         return index + 1
     end
 end
+#.........................................................................................
+#   Based on time series: (GPU)
+#.........................................................................................
+@inline function gpu_compute_motif(shape::Rect2, x, y, i, j, power_vector, offset, n)
+    index = 0
 
+    @inbounds begin
+        for m in eachindex(power_vector)
+            dw, dh = offset[m]
+            @fastmath index += power_vector[m] * gpu_recurrence(shape.expr, x, y, i + dw, j + dh, n)
+        end
+    end
+
+    return @fastmath index + 1
+end
 ##########################################################################################
 #   Implementations: RectN
 ##########################################################################################
@@ -134,6 +150,18 @@ end
     N = W * H
     elems = [ :(SVector{2, Int}($w, $h)) for w in 0:(W - 1) for h in 0:(H - 1)]
     return :( SVector{$N, $(SVector{2, Int})}( $(elems...) ) )
+end
+
+@generated function get_power_vector(::GPUCore, ::Rect2{W, H, B, E}) where {W, H, B, E}
+    N = W * H
+    expr = :(SVector{$N}( $([:(Int32(B^$i)) for i in 0:(N-1)]... ) ))
+    return expr
+end
+
+@generated function get_offsets(::GPUCore, ::Rect2{W, H, B, E}) where {W, H, B, E}
+    N = W * H
+    elems = [ :(SVector{2, Int32}($(Int32(w)), $(Int32(h)))) for w in 0:(W - 1) for h in 0:(H - 1)]
+    return :( SVector{$N, $(SVector{2, Int32})}( $(elems...) ) )
 end
 
 function get_histogram_size(shape::RectN{D, B, E}) where {D, B, E}

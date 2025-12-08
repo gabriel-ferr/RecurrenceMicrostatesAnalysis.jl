@@ -12,11 +12,11 @@ function SRandom(num_samples::Int)
     return SRandom{Int}(num_samples)
 end 
 
-function SRandom(rate::Float64)
+function SRandom(rate::Union{Float32, Float64})
     @assert rate > 0 "The sampling rate must be greater than 0."
     @assert rate ≤ 1.0 "The sampling rate must be smaller than 1."
 
-    return SRandom{Float64}(rate)
+    return SRandom{typeof(rate)}(rate)
 end
 
 ##########################################################################################
@@ -31,6 +31,12 @@ function get_sample(::CPUCore, ::SRandom, space::SSRect2, rng, _)
     return i, j
 end
 #.........................................................................................
+#   Based on time series: (GPU)
+#.........................................................................................
+function get_sample(::GPUCore, ::SRandom, space::SSRect2, samples)
+    return [@SVector[Int32(rand(1:space.W)), Int32(rand(1:space.H))] for _ in 1:samples]
+end
+#.........................................................................................
 #   Based on spatial data: (CPU only)
 #.........................................................................................
 function get_sample(::CPUCore, ::SRandom, space::SSRectN, idx::Vector{Int}, rng, _)
@@ -38,7 +44,6 @@ function get_sample(::CPUCore, ::SRandom, space::SSRectN, idx::Vector{Int}, rng,
         idx[i] = rand(rng, 1:space.space[i])
     end
 end
-
 ##########################################################################################
 #   Implementations: Utils
 ##########################################################################################
