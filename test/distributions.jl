@@ -47,6 +47,8 @@ end
 
         true
     end
+
+    @test_nothing distribution(x, 0.27, 2; sampling = Full())
 end
 
 @testset "distributions: AbstractArray + CPUCore" begin
