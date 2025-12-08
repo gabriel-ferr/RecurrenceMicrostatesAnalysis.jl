@@ -1,6 +1,7 @@
 using RecurrenceMicrostatesAnalysis
 
 using Test
+using Distances
 using ComplexityMeasures
 
 const TOLERANCE = 1e-5
@@ -79,4 +80,17 @@ end
 
         true
     end
+end
+
+@testset "recurrence expressions (with CPUCore)" begin
+    @test Standard(0.27) isa RecurrenceExpression
+    @test Standard(0.27; metric = Cityblock()) isa RecurrenceExpression
+    @test Corridor(0.05, 0.27) isa RecurrenceExpression
+    @test Corridor(0.05, 0.27; metric = Cityblock()) isa RecurrenceExpression
+    
+    x = StateSpaceSet(rand(1000))
+    @test_nothing distribution(x, Standard(0.27), 2)
+    @test_nothing distribution(x, Standard(0.27; metric = Cityblock()), 2)
+    @test_nothing distribution(x, Corridor(0.05, 0.27), 2)
+    @test_nothing distribution(x, Corridor(0.05, 0.27; metric = Cityblock()), 2)
 end
