@@ -1,5 +1,4 @@
 export CPUCore
-import Random as RND
 
 ##########################################################################################
 #   RMACore: CPU
@@ -35,7 +34,7 @@ function histogram(
     for t in 1:threads
         tasks[t] = Threads.@spawn begin
             local_hist = zeros(Int, get_histogram_size(core.shape))
-            local_rng = RND.TaskLocalRNG()
+            local_rng = TaskLocalRNG()
 
             start = (t - 1) * chunk + 1
             stop  = min(t * chunk, samples)
@@ -80,7 +79,7 @@ function histogram(
     for t in 1:threads
         tasks[t] = Threads.@spawn begin
             local_hist = zeros(Int, get_histogram_size(core.shape))
-            local_rng = RND.TaskLocalRNG()
+            local_rng = TaskLocalRNG()
 
             start = (t - 1) * chunk + 1
             stop  = min(t * chunk, samples)

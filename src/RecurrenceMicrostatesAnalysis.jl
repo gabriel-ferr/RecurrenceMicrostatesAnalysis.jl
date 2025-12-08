@@ -12,9 +12,12 @@ end RecurrenceMicrostatesAnalysis
 using ComplexityMeasures
 using Distances
 using GPUArraysCore
+using KernelAbstractions
+using Random
 using Reexport
 using StaticArrays
 
+@reexport using Adapt
 @reexport using StateSpaceSets
 
 const DEFAULT_METRIC = Euclidean()
@@ -28,6 +31,7 @@ include("core/shape.jl")
 include("core/sampling.jl")
 
 include("core/cpu_core.jl")
+include("core/gpu/gpu_core.jl")
 
 ##########################################################################################
 #   Recurrence functions, motif shapes, and sampling modes
