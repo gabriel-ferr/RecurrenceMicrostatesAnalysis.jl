@@ -10,6 +10,22 @@ struct GPUCore{B, M<:MotifShape, S<:SamplingMode} <: RMACore
 end
 
 ##########################################################################################
+#   Implementation: compute_motif
+##########################################################################################
+@inline function gpu_compute_motif(expr, x, y, i, j, power_vector, offset, n)
+    index = 0
+
+    @inbounds begin
+        for m in eachindex(power_vector)
+            dw, dh = offset[m]
+            @fastmath index += power_vector[m] * gpu_recurrence(expr, x, y, i + dw, j + dh, n)
+        end
+    end
+
+    return @fastmath index + 1
+end
+
+##########################################################################################
 #   Implementation: histogram
 ##########################################################################################
 #   Based on time series: (GPU)
@@ -63,7 +79,7 @@ end
             j = rng[m][2]
         end
 
-        idx = gpu_compute_motif(core.shape, x, y, i, j, pv, offsets, n)
+        idx = gpu_compute_motif(core.shape.expr, x, y, i, j, pv, offsets, n)
         
         Atomix.@atomic hist[idx] += 1
     end

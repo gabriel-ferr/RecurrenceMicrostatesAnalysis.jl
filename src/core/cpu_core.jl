@@ -9,6 +9,30 @@ struct CPUCore{M<:MotifShape, S<:SamplingMode} <: RMACore
 end
 
 ##########################################################################################
+#   Implementation: compute_motif
+##########################################################################################
+@inline function compute_motif(
+    expr::E,
+    x::StateSpaceSet,
+    y::StateSpaceSet,
+    i::Int,
+    j::Int,
+    power_vector::SVector{D, Int},
+    offsets::SVector{D, SVector{2, Int}}
+) where {E<:RecurrenceExpression, D}
+    @inbounds begin
+        index = 0
+
+        for m in eachindex(power_vector)
+            dw, dh = offsets[m]
+            @fastmath index += recurrence(expr, x, y, i + dw, j + dh) * power_vector[m]
+        end
+
+        return index + 1
+    end
+end
+
+##########################################################################################
 #   Implementation: histogram
 ##########################################################################################
 #   Based on time series: (CPU)
@@ -41,7 +65,7 @@ function histogram(
 
             for m in start:stop
                 i, j = get_sample(core, core.sampling, space, local_rng, m)
-                idx = compute_motif(core.shape, x, y, i, j, pv, offsets)
+                idx = compute_motif(core.shape.expr, x, y, i, j, pv, offsets)
                 @inbounds local_hist[idx] += 1
             end
 

@@ -33,7 +33,7 @@ SamplingSpace(
     ::Rect2{W, H, B, E}, 
     x::Union{StateSpaceSet, AbstractGPUVector{SVector{N, Float32}}}, 
     y::Union{StateSpaceSet, AbstractGPUVector{SVector{N, Float32}}}
-) where {W, H, B, E, N} = SSRect2(length(x) - W, length(y) - H)
+) where {W, H, B, E<:RecurrenceExpression, N} = SSRect2(length(x) - W, length(y) - H)
 #.........................................................................................
 #   Based on spatial data: (CPU only)
 #.........................................................................................
@@ -41,7 +41,7 @@ function SamplingSpace(
     shape::RectN{D, B, E}, 
     x::AbstractArray{<: Real}, 
     y::AbstractArray{<: Real}
-) where {D, B, E}
+) where {D, B, E<:RecurrenceExpression}
 
     dims_x = size(x)[2:end]
     dims_y = size(y)[2:end]
@@ -55,48 +55,7 @@ function SamplingSpace(
 end
 
 ##########################################################################################
-#   Implementations: Rect2
-##########################################################################################
-#   Based on time series: (CPU)
-#.........................................................................................
-@inline function compute_motif(
-    shape::Rect2{W, H, B, E},
-    x::StateSpaceSet,
-    y::StateSpaceSet,
-    i::Int,
-    j::Int,
-    power_vector::SVector{N, Int},
-    offsets::SVector{N, SVector{2, Int}}
-) where {W, H, B, E, N}
-
-    @inbounds begin
-        index = 0
-        
-        for m in eachindex(power_vector)
-            dw, dh = offsets[m]
-            @fastmath index += recurrence(shape.expr, x, y, i + dw, j + dh) * power_vector[m]
-        end
-
-        return index + 1
-    end
-end
-#.........................................................................................
-#   Based on time series: (GPU)
-#.........................................................................................
-@inline function gpu_compute_motif(shape::Rect2, x, y, i, j, power_vector, offset, n)
-    index = 0
-
-    @inbounds begin
-        for m in eachindex(power_vector)
-            dw, dh = offset[m]
-            @fastmath index += power_vector[m] * gpu_recurrence(shape.expr, x, y, i + dw, j + dh, n)
-        end
-    end
-
-    return @fastmath index + 1
-end
-##########################################################################################
-#   Implementations: RectN
+#   Implementations: compute_motif (SRP)
 ##########################################################################################
 @inline function compute_motif(
     shape::RectN,
