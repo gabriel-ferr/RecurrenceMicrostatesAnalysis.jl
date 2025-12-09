@@ -89,9 +89,13 @@ end
 
         @test_nothing distribution(x, Rect(Standard(0.27), 2))
         @test_nothing distribution(x, Rect(Standard(0.27), 3))
+        @test_nothing distribution(x, Triangle(Standard(0.27), 2))
+        @test_nothing distribution(x, Triangle(Standard(0.27), 3))
 
         @test_nothing distribution(x, y, Rect(Standard(0.27), 2))
         @test_nothing distribution(x, y, Rect(Standard(0.27), 3))
+        @test_nothing distribution(x, y, Triangle(Standard(0.27), 2))
+        @test_nothing distribution(x, y, Triangle(Standard(0.27), 3))
     end
     
     @testset "SRP and CSRP" begin
