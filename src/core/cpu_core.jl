@@ -90,9 +90,6 @@ function histogram(
     dim_x = ndims(x) - 1
     dim_y = ndims(y) - 1
 
-    @assert ndims(x) - 1 + ndims(y) - 1 == length(core.shape.structure)
-    @assert length(space.space) == length(core.shape.structure)
-
     #   Allocate memory
     pv = get_power_vector(core, core.shape)
 
