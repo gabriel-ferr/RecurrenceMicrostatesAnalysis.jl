@@ -45,5 +45,5 @@ end
     j::NTuple{M, Int},
 ) where {N, M} 
     distance = @inbounds evaluate(expr.metric, view(x, :, i...), view(y, :, j...))
-    return UInt8(distance ≥ exp.ε_min && distance ≤ expr.ε_max)
+    return UInt8(distance ≥ expr.ε_min && distance ≤ expr.ε_max)
 end
