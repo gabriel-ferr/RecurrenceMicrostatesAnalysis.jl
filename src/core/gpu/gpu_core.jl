@@ -3,11 +3,15 @@ export GPUCore
 ##########################################################################################
 #   RMACore: GPU
 ##########################################################################################
-struct GPUCore{B, M<:MotifShape, S<:SamplingMode} <: RMACore
+abstract type GPUCore{B, M<:MotifShape, S<:SamplingMode} end
+
+struct StandardGPUCore{B, M<:MotifShape, S<:SamplingMode} <: GPUCore{B, M, S}
     backend::B
     shape::M
     sampling::S
 end
+
+GPUCore(backend::B, shape::M, sampling::S) where {B, M<:MotifShape, S<:SamplingMode} = StandardGPUCore(backend, shape, sampling)
 
 ##########################################################################################
 #   Implementation: compute_motif

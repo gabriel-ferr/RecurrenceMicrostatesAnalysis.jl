@@ -3,10 +3,14 @@ export CPUCore
 ##########################################################################################
 #   RMACore: CPU
 ##########################################################################################
-struct CPUCore{M<:MotifShape, S<:SamplingMode} <: RMACore
+abstract type CPUCore{M<:MotifShape, S<:SamplingMode} end
+
+struct StandardCPUCore{M<:MotifShape, S<:SamplingMode} <: CPUCore{M, S}
     shape::M
     sampling::S
 end
+
+CPUCore(shape::M, sampling::S) where {M<:MotifShape, S<:SamplingMode} = StandardCPUCore(shape, sampling)
 
 ##########################################################################################
 #   Implementation: compute_motif
