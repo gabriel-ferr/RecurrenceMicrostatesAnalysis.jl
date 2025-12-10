@@ -55,7 +55,8 @@ function histogram(
 
     #   Call the kernel
     if core.sampling isa Full
-        gpu_histogram!(core.backend, groupsize)(x, y, pv, offsets, core, space, Int32(samples), hist, nothing, Int32(N); ndrange = samples)
+        gpu_rng = KernelAbstractions.zeros(core.backend, SVector{2,Int32}, 1)
+        gpu_histogram!(core.backend, groupsize)(x, y, pv, offsets, core, space, Int32(samples), hist, gpu_rng, Int32(N); ndrange = samples)
     else
         rng = get_sample(core, core.sampling, space, samples)
         gpu_rng = KernelAbstractions.zeros(core.backend, SVector{2,Int32}, samples)
