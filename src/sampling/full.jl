@@ -20,8 +20,8 @@ end
 #   Based on time series: (GPU)
 #.........................................................................................
 function get_sample(::GPUCore, ::Full, space::SSRect2, _, m)
-    i = Int32((m - 1) % space.W)
-    j = Int32((m - 1) ÷ space.W)
+    i = Int32((m - 1) % space.W) + 1
+    j = Int32((m - 1) ÷ space.W) + 1
 
     return i, j
 end
