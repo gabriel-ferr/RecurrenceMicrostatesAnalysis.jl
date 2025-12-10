@@ -29,3 +29,11 @@ end
 
     @test (abs(det_l2 - measure(Determinism(), x)) / det_l2) ≤ TOLERANCE
 end
+
+@testset "determinism" begin
+    x = StateSpaceSet(rand(1000))
+    rp = RecurrenceMatrix(x, 0.27)
+    det_l2 = laminarity(rp)
+
+    @test (abs(det_l2 - measure(Laminarity(), x)) / det_l2) ≤ TOLERANCE
+end
