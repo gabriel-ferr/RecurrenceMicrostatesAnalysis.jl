@@ -2,6 +2,9 @@ using RecurrenceMicrostatesAnalysis
 
 using Test
 using Distances
+using RecurrenceAnalysis
+
+const TOLERANCE = 0.01
 
 @testset "recurrence rate" begin
     x = StateSpaceSet(rand(1000))
@@ -17,4 +20,12 @@ end
 
     @test measure(RecurrenceEntropy(), dist) ≥ 0
     @test measure(RecurrenceEntropy(), x) ≥ 0
+end
+
+@testset "determinism" begin
+    x = StateSpaceSet(rand(1000))
+    rp = RecurrenceMatrix(x, 0.27)
+    det_l2 = determinism(rp)
+
+    @test (abs(det_l2 - measure(Determinism(), x)) / det_l2) ≤ TOLERANCE
 end
