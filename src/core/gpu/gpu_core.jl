@@ -48,8 +48,6 @@ function histogram(
     bad_m    = KernelAbstractions.zeros(core.backend, Int32, K)
     bad_i    = KernelAbstractions.zeros(core.backend, Int32, K)
     bad_j    = KernelAbstractions.zeros(core.backend, Int32, K)
-    bad_ii   = KernelAbstractions.zeros(core.backend, Int32, K)
-    bad_jj   = KernelAbstractions.zeros(core.backend, Int32, K)
     bad_idx  = KernelAbstractions.zeros(core.backend, Int32, K)
     bad_val  = KernelAbstractions.zeros(core.backend, Int32, K)  # valor de gpu_recurrence
 
@@ -69,7 +67,7 @@ function histogram(
         gpu_rng = KernelAbstractions.zeros(core.backend, SVector{2,Int32}, 1)
         gpu_histogram!(core.backend, groupsize)(x, y, pv, offsets, core, space, Int32(samples), hist, gpu_rng, Int32(N),
         
-        badcount, bad_m, bad_i, bad_j, bad_ii, bad_jj, bad_idx, bad_val
+        badcount, bad_m, bad_i, bad_j, bad_idx, bad_val
         
         ; ndrange = samples)
     else
@@ -107,7 +105,7 @@ end
 #   Implementation: GPU Kernels
 ##########################################################################################
 @kernel function gpu_histogram!(x, y, pv, offsets, core, space, samples, hist, rng, n,
-     badcount, bad_m, bad_i, bad_j, bad_ii, bad_jj, bad_idx, bad_val)
+     badcount, bad_m, bad_i, bad_j, bad_idx, bad_val)
     m = @index(Global)
     if m <= samples
         i = zero(Int32)
@@ -122,14 +120,12 @@ end
 
         idx = gpu_compute_motif(core.shape.expr, x, y, i, j, pv, offsets, n)
 
-        if idx < 1 || idx > length(hist) || ii < 1 || ii > space.W || jj < 1 || jj > space.H
+        if idx < 1 || idx > length(hist) || i < 1 || i > space.W || j < 1 || j > space.H
             pos = Atomix.@atomic badcount[1] += 1
             if pos <= length(bad_m)
                 bad_m[pos]  = m
                 bad_i[pos]  = i
                 bad_j[pos]  = j
-                bad_ii[pos] = ii
-                bad_jj[pos] = jj
                 bad_idx[pos]= idx
                 bad_val[pos]= Int32(val)  # val convertido
             end
