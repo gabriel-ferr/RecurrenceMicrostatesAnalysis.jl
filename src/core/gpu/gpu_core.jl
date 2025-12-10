@@ -43,6 +43,17 @@ function histogram(
     seed::UInt32 = UInt32(time_ns() & 0xf12a57e8),
 ) where {N}
 
+    K = 64  # quantos erros guardar
+    badcount = KernelAbstractions.zeros(core.backend, Int32, 1)
+    bad_m    = KernelAbstractions.zeros(core.backend, Int32, K)
+    bad_i    = KernelAbstractions.zeros(core.backend, Int32, K)
+    bad_j    = KernelAbstractions.zeros(core.backend, Int32, K)
+    bad_ii   = KernelAbstractions.zeros(core.backend, Int32, K)
+    bad_jj   = KernelAbstractions.zeros(core.backend, Int32, K)
+    bad_idx  = KernelAbstractions.zeros(core.backend, Int32, K)
+    bad_val  = KernelAbstractions.zeros(core.backend, Int32, K)  # valor de gpu_recurrence
+
+
     #   Info
     space = SamplingSpace(core.shape, x, y)
     samples = get_num_samples(core.sampling, space)
@@ -56,7 +67,11 @@ function histogram(
     #   Call the kernel
     if core.sampling isa Full
         gpu_rng = KernelAbstractions.zeros(core.backend, SVector{2,Int32}, 1)
-        gpu_histogram!(core.backend, groupsize)(x, y, pv, offsets, core, space, Int32(samples), hist, gpu_rng, Int32(N); ndrange = samples)
+        gpu_histogram!(core.backend, groupsize)(x, y, pv, offsets, core, space, Int32(samples), hist, gpu_rng, Int32(N),
+        
+        K, badcount, bad_m, bad_i, bad_j, bad_ii, bad_jj, bad_idx, bad_val
+        
+        ; ndrange = samples)
     else
         rng = get_sample(core, core.sampling, space, samples)
         gpu_rng = KernelAbstractions.zeros(core.backend, SVector{2,Int32}, samples)
@@ -65,7 +80,26 @@ function histogram(
         gpu_histogram!(core.backend, groupsize)(x, y, pv, offsets, core, space, Int32(samples), hist, gpu_rng, Int32(N); ndrange = samples)
     end
 
+    println("BEFORE SYNC")
+
     KernelAbstractions.synchronize(core.backend)
+
+    println("AFTER SYNC")
+
+    host_badcount = Vector{Int32}(undef,1); copyto!(host_badcount, badcount)
+    if host_badcount[1] > 0
+        c = host_badcount[1]
+        host_m = Vector{Int32}(undef,K); copyto!(host_m, bad_m)
+        host_i = Vector{Int32}(undef,K); copyto!(host_i, bad_i)
+        host_j = Vector{Int32}(undef,K); copyto!(host_j, bad_j)
+        host_ii = Vector{Int32}(undef,K); copyto!(host_ii, bad_ii)
+        host_jj = Vector{Int32}(undef,K); copyto!(host_jj, bad_jj)
+        host_idx = Vector{Int32}(undef,K); copyto!(host_idx, bad_idx)
+        host_val = Vector{Int32}(undef,K); copyto!(host_val, bad_val)
+        @show host_badcount[1]
+        @show host_m[1:c], host_i[1:c], host_j[1:c], host_ii[1:c], host_jj[1:c], host_idx[1:c], host_val[1:c]
+    end
+
     return hist |> Vector
 end
 
@@ -87,10 +121,18 @@ end
 
         idx = gpu_compute_motif(core.shape.expr, x, y, i, j, pv, offsets, n)
 
-        if idx < 1 || idx > length(hist)
-            @cuprintln("BAD IDX: ", idx)
+        if idx < 1 || idx > length(hist) || ii < 1 || ii > space.W || jj < 1 || jj > space.H
+            pos = Atomix.@atomic badcount[1] += 1
+            if pos <= length(bad_m)
+                bad_m[pos]  = m
+                bad_i[pos]  = i
+                bad_j[pos]  = j
+                bad_ii[pos] = ii
+                bad_jj[pos] = jj
+                bad_idx[pos]= idx
+                bad_val[pos]= Int32(val)  # val convertido
+            end
         end
-
         
         Atomix.@atomic hist[idx] += one(Int32)
     end
