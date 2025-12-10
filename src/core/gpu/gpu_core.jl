@@ -73,8 +73,8 @@ end
 @kernel function gpu_histogram!(x, y, pv, offsets, core, space, samples, hist, rng, n)
     m = @index(Global)
     if m <= samples
-        i = zero(Float32)
-        j = zero(Float32)
+        i = zero(Int32)
+        j = zero(Int32)
 
         if core.sampling isa Full
             i, j = get_sample(core, core.sampling, space, nothing, m)
