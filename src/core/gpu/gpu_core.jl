@@ -79,7 +79,7 @@ end
         j = zero(Int32)
 
         if core.sampling isa Full
-            i, j = get_sample(core, core.sampling, space, nothing, m)
+            i, j = get_sample(core, core.sampling, space, rng, m)
         else
             i = rng[m][1]
             j = rng[m][2]
