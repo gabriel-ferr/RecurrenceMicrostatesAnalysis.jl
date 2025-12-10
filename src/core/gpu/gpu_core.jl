@@ -35,12 +35,12 @@ end
 #   Based on time series: (GPU)
 #.........................................................................................
 function histogram(
-    core::GPUCore{B,M,S},
+    core::GPUCore,
     x::AbstractGPUVector{SVector{N, Float32}},
     y::AbstractGPUVector{SVector{N, Float32}};
     groupsize::Int = 256,
     seed::UInt32 = UInt32(time_ns() & 0xf12a57e8),
-) where {B, M<:MotifShape, S<:SamplingMode, N}
+) where {N}
 
     #   Info
     space = SamplingSpace(core.shape, x, y)
