@@ -1,4 +1,5 @@
 export GPUCore
+using CUDA
 
 ##########################################################################################
 #   RMACore: GPU
@@ -84,6 +85,11 @@ end
         end
 
         idx = gpu_compute_motif(core.shape.expr, x, y, i, j, pv, offsets, n)
+
+        if idx < 1 || idx > length(hist)
+            @cuprintln("BAD IDX: ", idx)
+        end
+
         
         Atomix.@atomic hist[idx] += one(Int32)
     end
