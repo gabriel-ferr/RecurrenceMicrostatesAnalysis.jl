@@ -17,7 +17,7 @@ end
 #.........................................................................................
 #       Using as input a time series
 #.........................................................................................
-function measure(::Determinism, x::StateSpaceSet; threshold::Real = 0.27, n::Integer = 3)
+function measure(::Determinism, x::StateSpaceSet; threshold::Real = 0.27)
     dist = distribution(x, Diagonal(Standard(threshold), 3))
     measure(Determinism(), dist)
 end
