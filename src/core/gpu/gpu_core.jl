@@ -69,7 +69,7 @@ function histogram(
         gpu_rng = KernelAbstractions.zeros(core.backend, SVector{2,Int32}, 1)
         gpu_histogram!(core.backend, groupsize)(x, y, pv, offsets, core, space, Int32(samples), hist, gpu_rng, Int32(N),
         
-        K, badcount, bad_m, bad_i, bad_j, bad_ii, bad_jj, bad_idx, bad_val
+        badcount, bad_m, bad_i, bad_j, bad_ii, bad_jj, bad_idx, bad_val
         
         ; ndrange = samples)
     else
@@ -106,7 +106,8 @@ end
 ##########################################################################################
 #   Implementation: GPU Kernels
 ##########################################################################################
-@kernel function gpu_histogram!(x, y, pv, offsets, core, space, samples, hist, rng, n)
+@kernel function gpu_histogram!(x, y, pv, offsets, core, space, samples, hist, rng, n,
+     badcount, bad_m, bad_i, bad_j, bad_ii, bad_jj, bad_idx, bad_val)
     m = @index(Global)
     if m <= samples
         i = zero(Int32)
