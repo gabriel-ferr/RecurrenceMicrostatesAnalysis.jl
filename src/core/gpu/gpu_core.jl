@@ -17,7 +17,7 @@ GPUCore(backend::B, shape::M, sampling::S) where {B, M<:MotifShape, S<:SamplingM
 #   Implementation: compute_motif
 ##########################################################################################
 @inline function gpu_compute_motif(expr, x, y, i, j, power_vector, offset, n)
-    index = 0
+    index = zero(Int32)
 
     @inbounds begin
         for m in eachindex(power_vector)
@@ -85,6 +85,6 @@ end
 
         idx = gpu_compute_motif(core.shape.expr, x, y, i, j, pv, offsets, n)
         
-        Atomix.@atomic hist[idx] += 1
+        Atomix.@atomic hist[idx] += one(Int32)
     end
 end
