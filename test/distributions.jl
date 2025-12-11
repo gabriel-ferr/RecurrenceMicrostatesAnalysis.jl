@@ -6,15 +6,6 @@ using ComplexityMeasures
 
 const TOLERANCE = 1e-5
 
-macro test_nothing(expr)
-    return quote
-        @test begin
-            $(esc(expr))
-            true
-        end
-    end
-end
-
 @testset "distributions: StateSpaceSet + CPUCore" begin
     
     x = StateSpaceSet(rand(1000))

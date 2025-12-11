@@ -33,8 +33,9 @@ include("core/shape.jl")
 include("core/sampling.jl")
 
 include("core/cpu_core.jl")
-include("core/gpu/gpu_core.jl")
+
 include("core/gpu/gpu_metric.jl")
+include("core/gpu/gpu_core.jl")
 
 include("core/measures.jl")
 

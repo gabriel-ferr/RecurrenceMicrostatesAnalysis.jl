@@ -36,4 +36,4 @@ RecurrenceAnalysis = "639c3291-70d9-5ea2-8c5b-839eba1ee399"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test", "RecurrenceAnalysis", "Distributions"]
+test = ["Test", "RecurrenceAnalysis", "Distributions", "Metal"]

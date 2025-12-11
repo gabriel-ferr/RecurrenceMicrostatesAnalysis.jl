@@ -38,8 +38,7 @@ function histogram(
     core::GPUCore,
     x::AbstractGPUVector{SVector{N, Float32}},
     y::AbstractGPUVector{SVector{N, Float32}};
-    groupsize::Int = 256,
-    seed::UInt32 = UInt32(time_ns() & 0xf12a57e8),
+    groupsize::Int = 256
 ) where {N}
 
     #   Info
@@ -88,4 +87,81 @@ end
         
         Atomix.@atomic hist[idx] += one(Int32)
     end
+end
+
+##########################################################################################
+#   Implementation: distribution
+##########################################################################################
+
+distribution(
+    x::AbstractGPUVector{SVector{N, Float32}},
+    y::AbstractGPUVector{SVector{N, Float32}},
+    shape::MotifShape;
+    rate::Float32 = 0.05f0,
+    sampling::SamplingMode = SRandom(rate),
+    groupsize::Int = 256,
+    backend = get_backend(x)
+) where {N} = distribution(GPUCore(backend, shape, sampling), x, y; groupsize = groupsize)
+
+distribution(
+    x::AbstractGPUVector{SVector{N, Float32}}, 
+    y::AbstractGPUVector{SVector{N, Float32}},
+    expr::RecurrenceExpression,
+    n::Int;
+    rate::Float32 = 0.05f0,
+    sampling::SamplingMode = SRandom(rate),
+    groupsize::Int = 256,
+    backend = get_backend(x)
+) where {N} = distribution(GPUCore(backend, Rect(expr, n), sampling), x, y; groupsize = groupsize)
+
+distribution(
+    x::AbstractGPUVector{SVector{N, Float32}},
+    y::AbstractGPUVector{SVector{N, Float32}},
+    ε::Float32,
+    n::Int;
+    rate::Float32 = 0.05f0,
+    sampling::SamplingMode = SRandom(rate),
+    groupsize::Int = 256,
+    backend = get_backend(x),
+    metric::GPUMetric = GPUEuclidean()
+) where {N} = distribution(x, y, Standard(ε; metric = metric), n; rate = rate, sampling = sampling, groupsize = groupsize, backend = backend)
+
+distribution(
+    x::AbstractGPUVector{SVector{N, Float32}},
+    shape::MotifShape;
+    rate::Float32 = 0.05f0,
+    sampling::SamplingMode = SRandom(rate),
+    groupsize::Int = 256,
+    backend = get_backend(x),
+) where{N} = distribution(x, x, shape; rate = rate, sampling = sampling, groupsize = groupsize, backend = backend)
+
+distribution(
+    x::AbstractGPUVector{SVector{N, Float32}},
+    expr::RecurrenceExpression,
+    n::Int;
+    rate::Float32 = 0.05f0,
+    sampling::SamplingMode = SRandom(rate),
+    groupsize::Int = 256,
+    backend = get_backend(x),
+) where{N} = distribution(x, x, expr, n; rate = rate, sampling = sampling, groupsize = groupsize, backend = backend)
+
+distribution(
+    x::AbstractGPUVector{SVector{N, Float32}},
+    ε::Float32,
+    n::Int;
+    rate::Float32 = 0.05f0,
+    sampling::SamplingMode = SRandom(rate),
+    groupsize::Int = 256,
+    backend = get_backend(x),
+    metric::GPUMetric = GPUEuclidean()
+) where {N} = distribution(x, x, ε, n; rate = rate, sampling = sampling, groupsize = groupsize, backend = backend, metric = metric)
+
+function distribution(
+    core::GPUCore,
+    x,
+    y;
+    groupsize::Int = 256,
+)
+    hist = histogram(core, x, y; groupsize = groupsize)
+    return Probabilities(hist)
 end
