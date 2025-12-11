@@ -11,6 +11,15 @@ Disorder(N::Int = 3) = Disorder{N}(disorder_labels_square[N - 1])
 ##########################################################################################
 #   Implementation: measure
 ##########################################################################################
+function measure(settings::Disorder{N}, probs::Probabilities, norm_param::Int) where {N}
+    total_entropy = 0.0
+    for c in 2:length(settings.labels) - 1
+        total_entropy += get_disorder_class_entropy(settings.labels[c], probs)
+    end
+
+    return total_entropy / norm_param
+end
+
 function measure(settings::Disorder{N}, x::StateSpaceSet; th::Float64 = 0.27, th_min::Float64 = 0.85 * th, th_max::Float64 = 1.25 * th, num_tests::Int = 10) where {N}
     @assert 2 ≤ N ≤ 4 "To compute disorder 'N' must be 2, 3, or 4."
     
@@ -20,13 +29,7 @@ function measure(settings::Disorder{N}, x::StateSpaceSet; th::Float64 = 0.27, th
 
     for i in eachindex(th_range)
         probs = distribution(x, th_range[i], N; sampling = Full())
-        total_entropy = 0.0
-
-        for c in 2:length(settings.labels) - 1
-            total_entropy += get_disorder_class_entropy(settings.labels[c], probs)
-        end
-
-        values[i] = total_entropy / A
+        values[i] = measure(settings, probs, A)
     end
 
     return maximum(values)
