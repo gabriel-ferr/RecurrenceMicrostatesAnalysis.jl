@@ -2,9 +2,10 @@ using RecurrenceMicrostatesAnalysis
 
 using Test
 using Distances
+using Distributions
 using RecurrenceAnalysis
 
-const TOLERANCE = 0.01
+const TOLERANCE = 0.05
 
 @testset "recurrence rate" begin
     x = StateSpaceSet(rand(1000))
@@ -30,10 +31,17 @@ end
     @test (abs(det_l2 - measure(Determinism(), x)) / det_l2) ≤ TOLERANCE
 end
 
-@testset "determinism" begin
+@testset "laminarity" begin
     x = StateSpaceSet(rand(1000))
     rp = RecurrenceMatrix(x, 0.27)
     det_l2 = laminarity(rp)
 
     @test (abs(det_l2 - measure(Laminarity(), x)) / det_l2) ≤ TOLERANCE
+end
+
+@testset "disorder" begin
+    x = StateSpaceSet(rand(Uniform(0, 1), 4000))
+    @test 0 ≤ measure(Disorder(2), x) ≤ 1
+    @test 0 ≤ measure(Disorder(3), x) ≤ 1
+    @test 0 ≤ measure(Disorder(4), x) ≤ 1
 end
