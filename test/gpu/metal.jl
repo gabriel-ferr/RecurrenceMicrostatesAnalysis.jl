@@ -1,5 +1,6 @@
 using RecurrenceMicrostatesAnalysis
 
+using Distributions
 using Metal
 using Test
 
@@ -29,7 +30,7 @@ const TOLERANCE = 1e-5
 
         @test length(outcomes_1) == length(outcomes_2)
 
-        for i in eachindex(outcomes_1)
+        for i ∈ eachindex(outcomes_1)
             if abs(dist_1[i] - dist_2[i]) ≥ TOLERANCE
                 return false
             end
@@ -39,4 +40,24 @@ const TOLERANCE = 1e-5
     end
 
     @test_nothing distribution(x, 0.27f0, 2; sampling = Full())
+end
+
+@testset "Metal GPU disorder test" begin
+    x = rand(Uniform(0, 1), (10000, 3))
+    x = Float32.(x)
+    v = Vector{MtlVector{SVector{3, Float32}}}(undef, 10)
+    for i ∈ 1:10
+        v[i] = StateSpaceSet(x[1 + (i - 1) * 1000 : i * 1000, :]) |> MtlVector
+    end
+
+    @test begin
+        results = measure(Disorder(2), v, 0.25f0, 0.28f0)
+        for Ξ ∈ results
+            if (abs(1.0 - Ξ) ≥ 0.05)
+                return false
+            end
+        end
+
+        return true
+    end 
 end

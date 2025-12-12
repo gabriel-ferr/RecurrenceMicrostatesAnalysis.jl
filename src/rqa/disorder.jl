@@ -35,6 +35,31 @@ function measure(settings::Disorder{N}, x::StateSpaceSet; th::Float64 = optimize
     return maximum(values)
 end
 
+function measure(settings::Disorder{N}, dataset::Vector{<:AbstractGPUVector{SVector{D, Float32}}}, th_min::Float32, th_max::Float32; num_tests::Int = 10, metric::GPUMetric = GPUEuclidean()) where {N, D}
+    @assert 2 ≤ N ≤ 4 "To compute disorder 'N' must be 2, 3, or 4."
+
+    A = _norm_factor(Val(N), Val(D))
+    values = zeros(Float32, num_tests, length(dataset))
+    th_range = Float32.(range(th_min, th_max, num_tests))
+    backend = get_backend(dataset[1])
+
+    for i ∈ eachindex(th_range)
+        core = GPUCore(backend, Rect(Standard(th_range[i]; metric = metric)), Full())
+        for j in eachindex(dataset)
+            probs = distribution(core, dataset[j], dataset[j])
+            values[i, j] = measure(settings, probs, A)
+        end
+    end
+
+    results = zeros(Float32, length(dataset))
+
+    for i ∈ eachindex(dataset)
+        results[i] = maximum(values[:, i])
+    end
+
+    return results
+end
+
 ##########################################################################################
 #   Utils
 ##########################################################################################
