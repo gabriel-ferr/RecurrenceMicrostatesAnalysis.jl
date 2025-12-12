@@ -56,6 +56,6 @@ include("rqa/rqa.jl")
 #   Utils
 ##########################################################################################
 include("utils/gpu_metrics/gpu_metrics.jl")
-include("utils/opt/threshold.jl")
+include("utils/opt/opt.jl")
 
 end
