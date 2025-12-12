@@ -44,7 +44,7 @@ function measure(settings::Disorder{N}, dataset::Vector{<:AbstractGPUVector{SVec
     backend = get_backend(dataset[1])
 
     for i ∈ eachindex(th_range)
-        core = GPUCore(backend, Rect(Standard(th_range[i]; metric = metric)), Full())
+        core = GPUCore(backend, Rect(Standard(th_range[i]; metric = metric), N), Full())
         for j in eachindex(dataset)
             probs = distribution(core, dataset[j], dataset[j])
             values[i, j] = measure(settings, probs, A)
