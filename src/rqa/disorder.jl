@@ -20,7 +20,7 @@ function measure(settings::Disorder{N}, probs::Probabilities, norm_param::Int) w
     return total_entropy / norm_param
 end
 
-function measure(settings::Disorder{N}, x::StateSpaceSet; th::Float64 = 0.27, th_min::Float64 = 0.85 * th, th_max::Float64 = 1.25 * th, num_tests::Int = 10) where {N}
+function measure(settings::Disorder{N}, x::StateSpaceSet; th::Float64 = optimize(Threshold(), Disorder(N), x)[1], th_min::Float64 = 0.85 * th, th_max::Float64 = 1.25 * th, num_tests::Int = 10) where {N}
     @assert 2 ≤ N ≤ 4 "To compute disorder 'N' must be 2, 3, or 4."
     
     A = get_disorder_norm_factor(settings, x)

@@ -16,7 +16,6 @@ end
 #.........................................................................................
 #       Using as input a time series
 #.........................................................................................
-function measure(::RecurrenceEntropy, x::StateSpaceSet; threshold::Real = 0.27, n::Integer = 3)
-    dist = distribution(x, threshold, n)
-    return measure(RecurrenceEntropy(), dist)
+function measure(::RecurrenceEntropy, x::StateSpaceSet; n::Integer = 3)
+    return optimize(Threshold(), RecurrenceEntropy(), x, n)[2]
 end

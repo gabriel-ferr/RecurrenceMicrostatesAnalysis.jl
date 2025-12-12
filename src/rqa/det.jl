@@ -17,7 +17,7 @@ end
 #.........................................................................................
 #       Using as input a time series
 #.........................................................................................
-function measure(::Determinism, x::StateSpaceSet; threshold::Real = 0.27)
+function measure(::Determinism, x::StateSpaceSet; threshold::Real = optimize(Threshold(), RecurrenceEntropy(), x, 3)[1])
     dist = distribution(x, Diagonal(Standard(threshold), 3))
     measure(Determinism(), dist)
 end

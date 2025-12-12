@@ -38,6 +38,7 @@ include("core/gpu/gpu_metric.jl")
 include("core/gpu/gpu_core.jl")
 
 include("core/measures.jl")
+include("core/optimize.jl")
 
 ##########################################################################################
 #   Recurrence functions, motif shapes, and sampling modes
@@ -55,5 +56,6 @@ include("rqa/rqa.jl")
 #   Utils
 ##########################################################################################
 include("utils/gpu_metrics/gpu_metrics.jl")
+include("utils/opt/threshold.jl")
 
 end

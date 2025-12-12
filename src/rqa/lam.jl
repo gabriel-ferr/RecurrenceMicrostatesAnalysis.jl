@@ -17,7 +17,7 @@ end
 #.........................................................................................
 #       Using as input a time series
 #.........................................................................................
-function measure(::Laminarity, x::StateSpaceSet; threshold::Real = 0.27)
+function measure(::Laminarity, x::StateSpaceSet; threshold::Real = optimize(Threshold(), RecurrenceEntropy(), x, 3)[1])
     dist = distribution(x, Rect(Standard(threshold); W = 1, H = 3))
     measure(Laminarity(), dist)
 end

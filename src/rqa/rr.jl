@@ -24,7 +24,7 @@ end
 #.........................................................................................
 #       Using as input a time series
 #.........................................................................................
-function measure(::RecurrenceRate, x::StateSpaceSet; threshold::Real = 0.27, n::Integer = 3)
+function measure(::RecurrenceRate, x::StateSpaceSet; n::Integer = 3, threshold::Real = optimize(Threshold(), RecurrenceEntropy(), x, n)[1])
     dist = distribution(x, threshold, n)
     return measure(RecurrenceRate(), dist)
 end
