@@ -10,6 +10,7 @@ end RecurrenceMicrostatesAnalysis
 #   Packages and constants
 ##########################################################################################
 using Atomix
+using Combinatorics
 using ComplexityMeasures
 using Distances
 using GPUArraysCore
@@ -39,6 +40,7 @@ include("core/gpu/gpu_core.jl")
 
 include("core/measures.jl")
 include("core/optimize.jl")
+include("core/operation.jl")
 
 ##########################################################################################
 #   Recurrence functions, motif shapes, and sampling modes
@@ -57,5 +59,6 @@ include("rqa/rqa.jl")
 ##########################################################################################
 include("utils/gpu_metrics/gpu_metrics.jl")
 include("utils/opt/opt.jl")
+include("utils/operations/ops.jl")
 
 end
