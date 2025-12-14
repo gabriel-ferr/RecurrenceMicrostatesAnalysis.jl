@@ -11,8 +11,9 @@ struct Rect2{W, H, B, E <: RecurrenceExpression} <: Rect
     expr::E
 end
 
-Rect(expr::E; W = 2, H = 2, B = 2) where {E <: RecurrenceExpression} = Rect2{W,H,B,E}(expr)
+Rect(expr::E; rows = 2, cols = 2, B = 2) where {E <: RecurrenceExpression} = Rect2{rows,cols,B,E}(expr)
 Rect(expr::E, N; B = 2) where {E <: RecurrenceExpression} = Rect2{N,N,B,E}(expr)
+Rect(rows::Int, cols::Int; threshold::Float64 = 0.27, B = 2) = Rect2{rows, cols, B, Standard}(Standard(threshold))
 
 #.........................................................................................
 #   Based on spatial data: (CPU only)
