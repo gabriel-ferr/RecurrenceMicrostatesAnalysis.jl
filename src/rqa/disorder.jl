@@ -56,7 +56,7 @@ function measure(settings::Disorder{N}, dataset::Vector{<:AbstractGPUVector{SVec
     return results
 end
 
-function measure(settings::Disorder{N}, dataset::Vector{StateSpaceSet}, th_min::Float64, th_max::Float64; num_tests::Int = 10, metric::GPUMetric = DEFAULT_METRIC) where {N, D}
+function measure(settings::Disorder{N}, dataset::Vector{StateSpaceSet}, th_min::Float64, th_max::Float64; num_tests::Int = 10, metric::GPUMetric = DEFAULT_METRIC) where {N}
     A = get_disorder_norm_factor(settings, dataset[1])
     values = zeros(Float64, num_tests, length(dataset))
     th_range = range(th_min, th_max, num_tests)
