@@ -33,7 +33,7 @@ end
 ##########################################################################################
 function precompute_Q(rows::Int, columns::Int, S::Vector{Vector{Int}})
     Q = Vector{Vector{UInt32}}(undef, length(S))
-    B = Vector{UInt32}(undef, rows * columns)
+    B = Vector{UInt32}(undef, 2^(rows))
 
     for i ∈ eachindex(B)
         B[i] = UInt32(i - 1)

@@ -44,4 +44,5 @@ end
     @test 0 ≤ measure(Disorder(2), x) ≤ 1
     @test 0 ≤ measure(Disorder(3), x) ≤ 1
     @test 0 ≤ measure(Disorder(4), x) ≤ 1
+    # @test 0 ≤ measure(Disorder(5), x) ≤ 1
 end
