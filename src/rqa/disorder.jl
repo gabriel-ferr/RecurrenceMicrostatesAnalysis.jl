@@ -56,6 +56,27 @@ function measure(settings::Disorder{N}, dataset::Vector{<:AbstractGPUVector{SVec
     return results
 end
 
+function measure(settings::Disorder{N}, dataset::Vector{StateSpaceSet{D, T}}, th_min::Float32, th_max::Float32; num_tests::Int = 10, metric::GPUMetric = DEFAULT_METRIC) where {N, D, T <: Real}
+    A = _norm_factor(Val(N), Val(D))
+    values = zeros(Float64, num_tests, length(dataset))
+    th_range = range(th_min, th_max, num_tests)
+
+    for i ∈ eachindex(th_range)
+        core = CPUCore(Rect(Standard(th_range[i]; metric = metric), N), Full())
+        for j in eachindex(dataset)
+            probs = distribution(core, dataset[j], dataset[j])
+            values[i, j] = measure(settings, probs, A)
+        end
+    end
+
+    results = zeros(Float32, length(dataset))
+
+    for i ∈ eachindex(dataset)
+        results[i] = maximum(values[:, i])
+    end
+
+    return results
+end
 ##########################################################################################
 #   Utils
 ##########################################################################################
