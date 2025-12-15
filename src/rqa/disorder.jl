@@ -34,8 +34,6 @@ function measure(settings::Disorder{N}, x::StateSpaceSet; th::Float64 = optimize
 end
 
 function measure(settings::Disorder{N}, dataset::Vector{<:AbstractGPUVector{SVector{D, Float32}}}, th_min::Float32, th_max::Float32; num_tests::Int = 10, metric::GPUMetric = GPUEuclidean()) where {N, D}
-    @assert 2 ≤ N ≤ 4 "To compute disorder 'N' must be 2, 3, or 4."
-
     A = _norm_factor(Val(N), Val(D))
     values = zeros(Float32, num_tests, length(dataset))
     th_range = Float32.(range(th_min, th_max, num_tests))
