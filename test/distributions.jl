@@ -4,7 +4,7 @@ using Test
 using Distances
 using ComplexityMeasures
 
-const TOLERANCE = 1e-5
+const TOLERANCE_DIST = 1e-5
 
 @testset "distributions: StateSpaceSet + CPUCore" begin
     
@@ -32,7 +32,7 @@ const TOLERANCE = 1e-5
         @test length(outcomes_1) == length(outcomes_2)
 
         for i in eachindex(outcomes_1)
-            if abs(dist_1[i] - dist_2[i]) ≥ TOLERANCE
+            if abs(dist_1[i] - dist_2[i]) ≥ TOLERANCE_DIST
                 return false
             end
         end
@@ -64,7 +64,7 @@ end
         @test length(outcomes_1) == length(outcomes_2)
 
         for i in eachindex(outcomes_1)
-            if abs(dist_1[i] - dist_2[i]) ≥ TOLERANCE
+            if abs(dist_1[i] - dist_2[i]) ≥ TOLERANCE_DIST
                 return false
             end
         end
@@ -80,6 +80,7 @@ end
 
         @test_nothing distribution(x, Rect(Standard(0.27), 2))
         @test_nothing distribution(x, Rect(Standard(0.27), 3))
+        @test_nothing distribution(x, Rect(3, 2))
         @test_nothing distribution(x, Triangle(Standard(0.27), 2))
         @test_nothing distribution(x, Triangle(Standard(0.27), 3))
         @test_nothing distribution(x, Diagonal(Standard(0.27), 2))

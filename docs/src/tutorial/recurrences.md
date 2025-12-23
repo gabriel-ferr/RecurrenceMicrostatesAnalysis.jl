@@ -1,0 +1,5 @@
+#   Recurrence Functions
+
+```@docs
+RecurrenceExpression
+```

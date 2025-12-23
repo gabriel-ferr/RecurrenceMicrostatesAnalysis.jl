@@ -4,7 +4,7 @@ using Distributions
 using Metal
 using Test
 
-const TOLERANCE = 1e-5
+const TOLERANCE_GPU = 1e-5
 
 @testset "Metal GPU distributions test" begin
     x = StateSpaceSet(Float32.(rand(1000))) |> MtlVector
@@ -31,7 +31,7 @@ const TOLERANCE = 1e-5
         @test length(outcomes_1) == length(outcomes_2)
 
         for i ∈ eachindex(outcomes_1)
-            if abs(dist_1[i] - dist_2[i]) ≥ TOLERANCE
+            if abs(dist_1[i] - dist_2[i]) ≥ TOLERANCE_GPU
                 return false
             end
         end

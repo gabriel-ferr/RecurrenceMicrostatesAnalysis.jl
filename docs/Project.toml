@@ -1,0 +1,7 @@
+[deps]
+Atomix = "a9b6321e-bd34-4604-b9c9-b65b8de01458"
+ComplexityMeasures = "ab4b797d-85ee-42ba-b621-05d793b346a2"
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+DocumenterCitations = "daee34ce-89f3-4625-b898-19384cb65244"
+RecurrenceMicrostatesAnalysis = "cb83a08b-85c6-4e94-91aa-4e946c7d4f0c"
+StateSpaceSets = "40b095a5-5852-4c12-98c7-d43bf788e795"

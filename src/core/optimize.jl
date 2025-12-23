@@ -8,6 +8,9 @@ abstract type Parameter end
 ##########################################################################################
 #   Implementation: optimize
 ##########################################################################################
+"""
+    optimize(param::Parameter, qm::QuantificationMeasure, args...)
+"""
 function optimize(param::Parameter, qm::QuantificationMeasure, args...)
     error("The 'optimize' is not implemented to the parameter '$(typeof(param))' for the measure '$(typeof(qm))'.")
 end

@@ -3,6 +3,9 @@ export Diagonal
 ##########################################################################################
 #   MotifShape: Diagonal + Constructors and sub-types
 ##########################################################################################
+"""
+    Diagonal{N, B, E<:RecurrenceExpression} <: MotifShape
+"""
 struct Diagonal{N, B, E<:RecurrenceExpression} <: MotifShape
     expr::E
 end

@@ -1,10 +1,16 @@
-export CPUCore
+export CPUCore, StandardCPUCore
 
 ##########################################################################################
 #   RMACore: CPU
 ##########################################################################################
+"""
+    CPUCore{M<:MotifShape, S<:SamplingMode}
+"""
 abstract type CPUCore{M<:MotifShape, S<:SamplingMode} end
 
+"""
+    StandardCPUCore{M<:MotifShape, S<:SamplingMode} <: CPUCore{M, S}
+"""
 struct StandardCPUCore{M<:MotifShape, S<:SamplingMode} <: CPUCore{M, S}
     shape::M
     sampling::S
@@ -41,8 +47,43 @@ end
 ##########################################################################################
 #   Based on time series: (CPU)
 #.........................................................................................
+"""
+    histogram(core::StandardCPUCore, [x], [y]; kwargs...)
+
+Count the microstates of an "abstract" RP constructed using `[x]` and `[y]`.
+If `[x]` and `[y]` are identical, the result corresponds to a Recurrence Plot (RP); otherwise, it corresponds to a Cross-Recurrence Plot (CRP).
+The output is a histogram of recurrence microstates for the given input data as a [`Counts`](@ref) structure.
+
+This method implements the CPU backend, based on a [`CPUCore`](@ref), specifically a [`StandardCPUCore`](@ref).
+
+### Input
+- `core`: A [`StandardCPUCore`](@ref), which defines how the backend computation is performed.
+- `[x]`: Input data, provided as a [`StateSpaceSet`](@ref) or an `AbstractArray`.
+- `[y]`: Input data, provided as a [`StateSpaceSet`](@ref) or an `AbstractArray`.
+
+!!! note
+    [`StateSpaceSet`](@ref) and `AbstractArray` use different backends and therefore different internal histogram implementations.  
+    However, both functions share the same method signature, differing only in the input data format.
+
+### Keyword Arguments
+- `threads`: Number of threads used to compute the histogram. By default, this is set to `Threads.nthreads()`, which can be specified at Julia startup using -- using `--threads N` or via the environment variable `JULIA_NUM_THREADS`.
+
+### Examples
+- Time series:
+```julia
+core = CPUCore(Rect(Standard(0.27), 2), SRandom(0.05))
+dist = histogram(core, ssset, ssset)
+```
+
+- Spatial data:
+```julia
+spatialdata = rand(Uniform(0, 1), (3, 50, 50))
+core = CPUCore(Rect(Standard(0.5), (2, 2, 1, 1)), SRandom(0.05))
+dist = histogram(core, spatialdata, spatialdata)
+```
+"""
 function histogram(
-    core::CPUCore,
+    core::StandardCPUCore,
     x::StateSpaceSet,
     y::StateSpaceSet;
     threads = Threads.nthreads()
@@ -77,13 +118,16 @@ function histogram(
         end
     end
 
-    return reduce(+, fetch.(tasks))
+    res = reduce(+, fetch.(tasks))
+    out = eachindex(res)
+
+    return Counts(res, out)
 end
 #.........................................................................................
 #   Based on spatial data: (CPU only)
 #.........................................................................................
 function histogram(
-    core::CPUCore,
+    core::StandardCPUCore,
     x::AbstractArray{<: Real},
     y::AbstractArray{<: Real};
     threads = Threads.nthreads()
@@ -122,7 +166,10 @@ function histogram(
         end
     end
 
-    return reduce(+, fetch.(tasks))
+    res =  reduce(+, fetch.(tasks))
+    out = eachindex(res)
+
+    return Counts(res, out)
 end
 
 ##########################################################################################
@@ -203,6 +250,34 @@ distribution(
     threads::Int = Threads.nthreads()
 ) = distribution(x, x, shape; rate = rate, sampling = sampling, threads = threads)
 
+"""
+    distribution(core::CPUCore, [x], [y]; kwargs...)
+
+Computes an RMA distribution using `[x]` and `[y]` as input and a CPU backend configuration specified by `core`, which must be a [`CPUCore`](@ref). 
+The inputs `[x]` and `[y]` must be provided as [`StateSpaceSet`](@ref) objects for time-series data, or as `AbstractArray`s for spatial data.
+
+### Input
+- `core`: A [`CPUCore`](@ref) defining the configuration of the [`MotifShape`](@ref), [`RecurrenceExpression`](@ref), and [`SamplingMode`](@ref).
+- `[x]`: Input data, given as a [`StateSpaceSet`](@ref) or an `AbstractArray`.
+- `[y]`: Input data, given as a [`StateSpaceSet`](@ref) or an `AbstractArray`.
+
+### Keyword Arguments
+- `threads`: Number of threads which used to compute the distribution. By default, this is set to `Threads.nthreads()`, which can be specified at Julia startup using -- using `--threads N` or via the environment variable `JULIA_NUM_THREADS`.
+
+### Examples
+- Time series:
+```julia
+core = CPUCore(Rect(Standard(0.27), 2), SRandom(0.05))
+dist = distribution(core, ssset, ssset)
+```
+
+- Spatial data:
+```julia
+spatialdata = rand(Uniform(0, 1), (3, 50, 50))
+core = CPUCore(Rect(Standard(0.5), (2, 2, 1, 1)), SRandom(0.05))
+dist = distribution(core, spatialdata, spatialdata)
+```
+"""
 function distribution(
     core::CPUCore,
     x,

@@ -19,7 +19,7 @@ which can be very useful when working with RMA.
 To install the package, run:
 ```julia
 import Pkg
-Pkg.add(url="https://github.com/gabriel-ferr/RecurrenceMicrostatesAnalysis.jl")
+Pkg.add("RecurrenceMicrostatesAnalysis")
 ```
 
 The package documentation is available [online](https://dynamicsufpr.github.io/RecurrenceMicrostatesAnalysis.jl/), or you can build it

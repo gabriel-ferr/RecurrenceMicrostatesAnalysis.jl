@@ -16,7 +16,6 @@ using Distances
 using GPUArraysCore
 using KernelAbstractions
 using Random
-using Random123
 using Reexport
 using StaticArrays
 

@@ -3,6 +3,9 @@ export SRandom
 ##########################################################################################
 #   Sampling Mode: SRandom
 ##########################################################################################
+"""
+    SRandom{F<:Real} <: SamplingMode
+"""
 struct SRandom{F <: Real} <: SamplingMode
     sampling_factor::F
 end

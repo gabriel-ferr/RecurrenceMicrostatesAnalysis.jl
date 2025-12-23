@@ -1,10 +1,16 @@
-export GPUCore
+export GPUCore, StandardGPUCore
 
 ##########################################################################################
 #   RMACore: GPU
 ##########################################################################################
+"""
+    GPUCore
+"""
 abstract type GPUCore{B, M<:MotifShape, S<:SamplingMode} end
 
+"""
+    StandardGPUCore{B, M<:MotifShape, S<:SamplingMode} <: GPUCore{B, M, S}
+"""
 struct StandardGPUCore{B, M<:MotifShape, S<:SamplingMode} <: GPUCore{B, M, S}
     backend::B
     shape::M
@@ -34,8 +40,36 @@ end
 ##########################################################################################
 #   Based on time series: (GPU)
 #.........................................................................................
+"""
+    histogram(core::StandardGPUCore, [x], [y]; kwargs...)
+
+Count the microstates of an "abstract" RP constructed using `[x]` and `[y]`.
+If `[x]` and `[y]` are identical, the result corresponds to a Recurrence Plot (RP); otherwise, it corresponds to a Cross-Recurrence Plot (CRP).
+The output is a histogram of recurrence microstates for the given input data as a [`Counts`](@ref) structure.
+
+!!! note
+    The output is copied from GPU memory back to the CPU.
+
+This method implements the GPU backend, based on a [`GPUCore`](@ref), specifically a [`StandardGPUCore`](@ref).
+
+### Input
+- `core`: A [`StandardGPUCore`](@ref), which defines how the backend computation is performed.
+- `[x]`: Input data, provided as an `AbstractGPUVector`.
+- `[y]`: Input data, provided as an `AbstractGPUVector`.
+
+### Keyword Arguments
+- `groupsize`: Number of threads per workgroup on the GPU device.
+
+### Examples
+```julia
+using CUDA
+gpudata = StateSpaceSet(Float32.(data)) |> CuVector
+core = GPUCore(CUDABackend(), Rect(Standard(0.27f0; metric = GPUEuclidean()), 2), SRandom(0.05))
+dist = histogram(core, gpudata, gpudata)
+```
+"""
 function histogram(
-    core::GPUCore,
+    core::StandardGPUCore,
     x::AbstractGPUVector{SVector{N, Float32}},
     y::AbstractGPUVector{SVector{N, Float32}};
     groupsize::Int = 256
@@ -64,7 +98,10 @@ function histogram(
     end
 
     KernelAbstractions.synchronize(core.backend)
-    return hist |> Vector
+    res =  hist |> Vector
+    out = eachindex(res)
+
+    return Counts(res, out)
 end
 
 ##########################################################################################
@@ -156,6 +193,34 @@ distribution(
     metric::GPUMetric = GPUEuclidean()
 ) where {N} = distribution(x, x, ε, n; rate = rate, sampling = sampling, groupsize = groupsize, backend = backend, metric = metric)
 
+"""
+    distribution(core::GPUCore, [x], [y]; kwargs...)
+
+Compute an RMA distribution using `[x]` and `[y]` as input data and a GPU backend configuration specified by `core`, which must be a [`GPUCore`](@ref).  
+The inputs `[x]` and `[y]` must be vectors inheriting from `AbstractGPUVector`. This method supports only time-series analysis.
+
+!!! note
+    The output is copied from GPU memory back to the CPU.
+
+### Input
+- `core`: A [`GPUCore`](@ref) defining the configuration of the [`MotifShape`](@ref), [`RecurrenceExpression`](@ref), and [`SamplingMode`](@ref).
+- `[x]`: Input data, provided as an `AbstractGPUVector`.
+- `[y]`: Input data, provided as an `AbstractGPUVector`.
+
+### Kwargs
+- `groupsize`: Number of threads per workgroup on the GPU device.
+
+### Examples
+```julia
+using CUDA
+gpudata = StateSpaceSet(Float32.(data)) |> CuVector
+core = GPUCore(CUDABackend(), Rect(Standard(0.27f0; metric = GPUEuclidean()), 2), SRandom(0.05))
+dist = distribution(core, gpudata, gpudata)
+```
+
+!!! warning
+    Spatial data are not supported by [`GPUCore`](@ref).
+"""
 function distribution(
     core::GPUCore,
     x,
