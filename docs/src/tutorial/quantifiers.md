@@ -6,7 +6,7 @@ Three of them are estimations of classical Recurrence Quantification Analysis (R
 One corresponds to an information-theoretic entropy. 
 And, the final quantifier is the **disorder** measure, which is defined using the microstate distribution as the basis for applying the method.
 
-In this section, we describe each of these quantifiers and explain how to compute them using the [`RecurrenceMicrostatesAnalysis`](@ref) package.
+In this section, we describe each of these quantifiers and explain how to compute them using the RecurrenceMicrostatesAnalysis.jl package.
 
 All quantifiers implemented in the package inherit from [`QuantificationMeasure`](@ref), and their computation is performed using the [`measure`](@ref) function.
 
@@ -25,7 +25,7 @@ RME = -\sum_{i = 1}^{2^\sigma} p_i^{(n)} \ln p_i^{(n)},
 
 where $n$ is the microstate length, $\sigma$ is the number of recurrence elements constrained within microstate (e.g., $\sigma = n^2$ for square microstates), and $p_i^{(n)}$ denotes the probability of the microstate with decimal representation $i$ in the distribution.
 
-In [`RecurrenceMicrostatesAnalysis`](@ref), the RME is implemented by the [`RecurrenceEntropy`](@ref) struct.
+In RecurrenceMicrostatesAnalysis.jl, the RME is implemented by the [`RecurrenceEntropy`](@ref) struct.
 
 ```@docs
 RecurrenceEntropy
@@ -49,7 +49,7 @@ RR_i^{(n)} = \frac{1}{\sigma} \sum_{m,n=1}^n M_{m,n}^{i, (n)},
 ```
 where $\mathbf M_i^{(n)}$ represents the structure of the microstate identified by the decimal index $i$, with size $n$, for a given motif shape (in this case, square).
 
-In [`RecurrenceMicrostatesAnalysis`](@ref), this quantifier is implemented by the [`RecurrenceRate`](@ref) struct.
+In RecurrenceMicrostatesAnalysis.jl, this quantifier is implemented by the [`RecurrenceRate`](@ref) struct.
 
 ```@docs
 RecurrenceRate
@@ -104,7 +104,7 @@ DET\approx 1 - \frac{p_3^{(3)}}{RR},
 ```
 where $p_3^{(3)}$ is the probability of observing the diagonal motif $0~1~0$.
 
-In [`RecurrenceMicrostatesAnalysis`](@ref), the computation of DET is implemented by the [`Determinism`](@ref) struct.
+In RecurrenceMicrostatesAnalysis.jl, the computation of DET is implemented by the [`Determinism`](@ref) struct.
 ```@docs
 Determinism
 ```
@@ -142,7 +142,7 @@ LAM\approx 1 - \frac{p_3^{(3)}}{RR},
 ```
 where $p_3^{(3)}$ denotes the probability of observing the line motif $0~1~0$.
 
-In [`RecurrenceMicrostatesAnalysis`](@ref), the computation of LAM is implemented by the [`Laminarity`](@ref) struct.
+In RecurrenceMicrostatesAnalysis.jl, the computation of LAM is implemented by the [`Laminarity`](@ref) struct.
 
 ```@docs
 Laminarity
@@ -159,7 +159,7 @@ This procedure generates a set of equivalent microstates given by
 ```
 This defines an equivalence class of microstates denoted by $\mathcal{M}_a$.
 
-The probability of observing a given microstate $\mathbf M_i^{(n)}$ in the recurrence plot, denoted by $p_i^{(n)}$, is computed using [`RecurrenceMicrostatesAnalysis`](@ref).
+The probability of observing a given microstate $\mathbf M_i^{(n)}$ in the recurrence plot, denoted by $p_i^{(n)}$, is computed using RecurrenceMicrostatesAnalysis.jl.
 To compute disorder, the probabilities of microstates belonging to the same class must be normalized.
 Thus, for $\mathbf M_i^{(n)} \in \mathcal{M}_a$, the normalized probability within the class is defined as
 ```math
@@ -171,7 +171,7 @@ The information entropy associated with the probability distribution of microsta
 \xi_a(\varepsilon) \stackrel{\mathrm{def}}{=} -\sum_{\mathbf{M}_i^{(n)} \in \mathcal{M}_a} p_i^{(a, n)} \ln p_i^{(a, n)}.
 ```
 This entropy is normalized by $\ln m_a$, where $m_a$ is the number of microstates in the class $\mathcal{M}_a$.
-Using [`RecurrenceMicrostatesAnalysis`](@ref), the normalized quantity $\xi_a(\varepsilon) / \ln m_a$ can be computed as
+Using RecurrenceMicrostatesAnalysis.jl, the normalized quantity $\xi_a(\varepsilon) / \ln m_a$ can be computed as
 ```@example disorder
 using Distributions, RecurrenceMicrostatesAnalysis
 data = StateSpaceSet(rand(Uniform(0, 1), 1000))
@@ -186,7 +186,7 @@ The total entropy over all classes for a given threshold $\varepsilon$ is define
 \xi(\varepsilon) \stackrel{\mathrm{def}}{=} \frac{1}{A} \sum_{a = 1}^A \frac{\xi_a(\varepsilon)}{\ln m_a},
 ```
 where $A$ is the number of contributing classes and defines the maximum possible amplitude.
-This normalization factor can also be computed using [`RecurrenceMicrostatesAnalysis`](@ref):
+This normalization factor can also be computed using RecurrenceMicrostatesAnalysis.jl:
 ```@example disorder
 A = RecurrenceMicrostatesAnalysis.get_disorder_norm_factor(Disorder(4), data)
 ```
@@ -201,7 +201,7 @@ Finally, the the *disorder index via symmetry in recurrence microstates* (DISREM
 \Xi = \max_{\varepsilon} \xi(\varepsilon).
 ```
 
-In [`RecurrenceMicrostatesAnalysis`](@ref), this quantifier is implemented by the [`Disorder`](@ref) struct.
+In RecurrenceMicrostatesAnalysis.jl, this quantifier is implemented by the [`Disorder`](@ref) struct.
 
 ```@docs
 Disorder
@@ -209,7 +209,7 @@ Disorder
 
 ### Computing disorder for compatible time series
 
-Consider a scenario in which a long time series is split into multiple windows. [`RecurrenceMicrostatesAnalysis`](@ref) provides a compact interface to compute the disorder for each window.
+Consider a scenario in which a long time series is split into multiple windows. RecurrenceMicrostatesAnalysis.jl provides a compact interface to compute the disorder for each window.
 
 As an example, consider a time series with 50,000 points consisting of a sine wave with added white noise, alternating every five windows:
 ```@example disorder

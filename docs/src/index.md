@@ -5,12 +5,12 @@ RecurrenceMicrostatesAnalysis
 ```
 
 !!! todo "GitHub"
-    [`RecurrenceMicrostatesAnalysis`](@ref) is an open-source package available on [GitHub](https://github.com/DynamicsUFPR/RecurrenceMicrostatesAnalysis.jl).
+    RecurrenceMicrostatesAnalysis.jl is an open-source package available on [GitHub](https://github.com/DynamicsUFPR/RecurrenceMicrostatesAnalysis.jl).
     If you find this package useful, please consider giving it a star on GitHub and don't forget to cite [our work](https://doi.org/10.1063/5.0293708). 😉
     
 
 ##  About the documentation
-[`RecurrenceMicrostatesAnalysis`](@ref) documentation was designed to explain how to use the package while also introducing the
+RecurrenceMicrostatesAnalysis.jl documentation was designed to explain how to use the package while also introducing the
 theoretical background of the RMA field. The bibliography used is listed in the [References](@ref)
 section; **remember to cite the appropriate works if you use them**.
 
@@ -20,27 +20,27 @@ also describe the [Output data from RecurrenceMicrostatesAnalysis.jl](@ref), exp
 computing distributions of recurrence microstates.
 
 the **Tutorial** section explains how to use the package. We start with a brief introduction to the RMA framework and show how to
-compute [Distributions](@ref) using [`RecurrenceMicrostatesAnalysis`](@ref). Next, we demonstate how to estimate RQA [Quantifiers](@ref)
+compute [Distributions](@ref) using RecurrenceMicrostatesAnalysis.jl. Next, we demonstate how to estimate RQA [Quantifiers](@ref)
 using RMA and discuss several quantifiers defined specifically for RMA. This material forms the "basic level" of the documentation and is sufficient
 to learn how to use the package effectively. We also include an introduction to [Operations](@ref) with recurrence microstates.
 
-If you want to learn more about [`RecurrenceMicrostatesAnalysis`](@ref), the [Recurrence Functions](@ref) section discusses variations in
+If you want to learn more about RecurrenceMicrostatesAnalysis.jl, the [Recurrence Functions](@ref) section discusses variations in
 computing recurrence between two states, and the [Shapes and Sampling](@ref) section provides explanations about different motif shapes, which
 are used to extract specific information from an abstract Recurrence Plot.
 
 We also provide a pipeline for [GPU](@ref) computations, which we recommend reading if you intend to use this framework. Moreover, the
-[Performance Tips](@ref) section offers advice on improving the performance of [`RecurrenceMicrostatesAnalysis`](@ref) and avoiding
+[Performance Tips](@ref) section offers advice on improving the performance of RecurrenceMicrostatesAnalysis.jl and avoiding
 common pitfalls.
 
 This documentation also includes some sections with applied examples:
 - [RMA with Machine Learning](@ref)
 
-Finally, if you are a developer interested in contributing to [`RecurrenceMicrostatesAnalysis`](@ref), we recommend reading the section
+Finally, if you are a developer interested in contributing to RecurrenceMicrostatesAnalysis.jl, we recommend reading the section
 [RecurrenceMicrostatesAnalysis.jl for Devs](@ref).
 
 ##  Input data for RecurrenceMicrostatesAnalysis.jl
 
-[`RecurrenceMicrostatesAnalysis`](@ref) accepts two types of input (each of them with a different backend):
+RecurrenceMicrostatesAnalysis.jl accepts two types of input (each of them with a different backend):
 
 - [`StateSpaceSet`](@ref) — used for multivariate time series, datasets, or state-space sets. It is employed by the backend when working with Recurrence Plots (RP) or Cross-Recurrence Plots (CRP). If you are working with RP or CRP, we strongly recommend using this data type, since the backend is optimized for it in this context.
 
@@ -58,7 +58,7 @@ StateSpaceSet
 
 ##  Output data from RecurrenceMicrostatesAnalysis.jl
 
-When computing the RMA distribution, [`RecurrenceMicrostatesAnalysis`](@ref) returns a [`Probabilities`](@ref) structure. This type is
+When computing the RMA distribution, RecurrenceMicrostatesAnalysis.jl returns a [`Probabilities`](@ref) structure. This type is
 provided by [ComplexityMeasures.jl](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/complexitymeasures/stable/), allowing this package
 to interoperate naturally with its tools and workflows.
 

@@ -1,6 +1,6 @@
 #   Distributions
 
-In this section, we introduce the computation of Recurrence Microstates Analysis (RMA) distributions using [`RecurrenceMicrostatesAnalysis`](@ref).
+In this section, we introduce the computation of Recurrence Microstates Analysis (RMA) distributions using RecurrenceMicrostatesAnalysis.jl.
 We begin with a [Quick start with RecurrenceMicrostatesAnalysis.jl](@ref), which demonstrates a simple application example. Next, we present [A brief review](@ref) of Recurrence Plots (RP) and RMA.
 Finally, we explain the [`distribution`](@ref) function in [Computing RMA distributions](@ref), describing how to use it, as well as the computation of [Histograms](@ref).
 
@@ -82,11 +82,11 @@ For example, considering square microstates of length $N = 2$, there are $16$ po
 ![Image of the 16 squared microstates to N = 2](../assets/microstates.png)
 
 Recurrence Microstates Analysis (RMA) uses the probability distribution of these microstates within an RP as a source of information for the analysis. 
-Accordingly, [`RecurrenceMicrostatesAnalysis`](@ref) computes these distributions and applies them to the study of dynamical systems.
+Accordingly, RecurrenceMicrostatesAnalysis.jl computes these distributions and applies them to the study of dynamical systems.
 
 ##  Computing RMA distributions
 
-The computation of RMA distributions is the core of the [`RecurrenceMicrostatesAnalysis`](@ref) package; all other functionalities rely on it as their primary source of information.
+The computation of RMA distributions is the core of the RecurrenceMicrostatesAnalysis.jl package; all other functionalities rely on it as their primary source of information.
 Therefore, understanding how this tool works is essential in order to fully use the package and all that it has to offer. 
 RMA distributions are computed using the [`distribution`](@ref) function, which provides several parameters that control its behaviour.
 
@@ -160,7 +160,7 @@ dist = distribution(data_1, data_2, 0.27, 2)
 
 ### Spatial data
 
-[`RecurrenceMicrostatesAnalysis`](@ref) also provides support for spatial data, following the work *"Generalised Recurrence Plot Analysis for Spatial Data"* [Marwan2007Spatial](@cite).
+RecurrenceMicrostatesAnalysis.jl also provides support for spatial data, following the work *"Generalised Recurrence Plot Analysis for Spatial Data"* [Marwan2007Spatial](@cite).
 This implementation represents an open research direction and is included in the package primarily for exploratory purposes.
 For this reason, support for spatial data analysis is partial, as many of its theoretical aspects have not yet been fully developed.
 
@@ -195,7 +195,7 @@ distribution(spatialdata, Rect(Standard(0.27), (2, 2, 2, 2)))
 distribution(spatialdata, Rect(Standard(0.27), (2, 1, 2, 1)))
 ```
 
-[`RecurrenceMicrostatesAnalysis`](@ref) also supports a spatial analogue of the Cross-Recurrence Plot (CRP) used for time series, referred to here as the Croos-Spatial Recurrence Plot (CSRP).
+RecurrenceMicrostatesAnalysis.jl also supports a spatial analogue of the Cross-Recurrence Plot (CRP) used for time series, referred to here as the Croos-Spatial Recurrence Plot (CSRP).
 This functionality arises naturally from the package structure and can be invoked as
 ```julia
 distribution([x], [y], shape::MotifShape; kwargs...)
