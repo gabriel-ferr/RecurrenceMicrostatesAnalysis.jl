@@ -61,7 +61,7 @@ lam = measure(Laminarity(), data)
 ```
 
 !!! note
-    When a time series is provided as input, [`RecurrenceMicrostatesAnalysis`](@ref) uses `line` microstates by default.
+    When a time series is provided as input, RecurrenceMicrostatesAnalysis.jl uses `line` microstates by default.
 """
 struct Laminarity <: QuantificationMeasure end
 

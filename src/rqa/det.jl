@@ -61,7 +61,7 @@ det = measure(Determinism(), data)
 ```
 
 !!! note
-    When a time series is provided as input, [`RecurrenceMicrostatesAnalysis`](@ref) uses [`Diagonal`](@ref) microstates by default.
+    When a time series is provided as input, RecurrenceMicrostatesAnalysis.jl uses [`Diagonal`](@ref) microstates by default.
 """
 struct Determinism <: QuantificationMeasure end
 
