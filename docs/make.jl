@@ -1,9 +1,8 @@
 cd(@__DIR__)
-include("../src/RecurrenceMicrostatesAnalysis.jl")
 using ComplexityMeasures
 using Documenter
 using DocumenterCitations
-using .RecurrenceMicrostatesAnalysis
+using RecurrenceMicrostatesAnalysis
 using StateSpaceSets
 
 pages = [
@@ -36,11 +35,16 @@ makedocs(
         prettyurls = true,
         collapselevel = 3,
     ),
-    authors = "Gabriel Vinicius Ferreira and Felipe Eduardo Lopes da Cruz and Gabriel Marghoti and Thiago de Lima Prado and Sergio Roberto Lopes and Norbert Marwan and Jürgen Kurths",
     modules = [RecurrenceMicrostatesAnalysis, StateSpaceSets, ComplexityMeasures],
     pages = pages,
     doctest = false,
     checkdocs = :exported,
     warnonly = [:doctest, :missing_docs],
     plugins = [bib]
+)
+
+deploydocs(
+    repo = "github.com/gabriel-ferr/RecurrenceMicrostatesAnalysis.jl.git",
+    target = "build",
+    push_preview = true
 )
