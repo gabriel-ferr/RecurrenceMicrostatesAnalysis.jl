@@ -3,6 +3,46 @@ export Threshold
 ##########################################################################################
 #   Parameter
 ##########################################################################################
+"""
+    Threshold <: Parameter
+
+Threshold parameter used to classify two states as recurrent or non-recurrent.
+
+The `Threshold` parameter can be optimized using the [`optimize`](@ref) function in
+combination with specific [`QuantificationMeasure`](@ref)s:
+```julia
+optimize(Threshold(), RecurrenceEntropy(), [x], n::int; kwargs...)
+optimize(Threshold(), qm::Disorder{N}, [x]; kwargs...)
+```
+
+!!! compat
+    Threshold optimization using RMA is currently supported only for the
+    [`RecurrenceEntropy`](@ref) and [`Disorder`](@ref) quantification measures.
+
+#   Arguments
+- `qm`: A [`QuantificationMeasure`](@ref) used to determine the optimal threshold. Supported measures are [`RecurrenceEntropy`](@ref) and [`Disorder`](@ref).
+- `[x]`: Input data used to estimate the optimal threshold.
+- `n`: Size of the square microstate used in the optimization.
+
+#   Returns
+A `Tuple{Float64, Float64}`, where:
+- the first element is the optimal threshold value, and
+- the second element is the value of the corresponding [`QuantificationMeasure`](@ref) at the optimum.
+
+#   Keyword Arguments
+- `rate`: Sampling rate. Default is `0.05`.
+- `sampling`: Sampling mode. Default is [`SRandom`](@ref).
+- `th_max_range`: Fraction of the maximum distance defining the upper bound of the threshold search range. Default is `0.5`.
+- `th_start`: Initial value of the threshold search range. Default is `1e-6`.
+- `fraction`: Interaction fraction controlling the refinement process. Default is `5`.
+
+#   Example
+```julia
+using Distributions, RecurrenceMicrostatesAnalysis
+data = StateSpaceSet(rand(Uniform(0, 1), 1000))
+th, s = optimize(Threshold(), RecurrenceEntropy(), data, 3)
+```
+"""
 struct Threshold <: Parameter end
 
 ##########################################################################################
@@ -98,3 +138,5 @@ function optimize(
 
     return εopt, fmax
 end
+
+##########################################################################################

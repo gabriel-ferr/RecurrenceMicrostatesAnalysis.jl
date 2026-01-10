@@ -1,15 +1,48 @@
 export PermuteColumns
 
 ##########################################################################################
-#   Permute Rows
+#   Permute Columns
 ##########################################################################################
-struct PermuteColumns{R, C}
+"""
+    PermuteColumns{R, C} <: Operation
+
+Operation that permutes the columns of a microstate \$\\mathbf{M}\$.
+
+To initialize a `PermuteColumns` operation, a rectangular microstate shape must be
+provided via a [`Rect`](@ref) structure:
+```julia
+PermuteColumns(::Rect2{R, C, B, E}; S::Vector{Vector{Int}} = collect(permutations(1:C))
+```
+Here, the keyword argument `S` defines the set \$S_n\$ of column permutations. The
+`PermuteColumns` struct precomputes the column permutations for each row of the microstate.
+These precomputed permutations can be accessed via the field `Q`.
+
+#   Examples
+```julia
+PermuteColumns(Rect(3, 3))     #   Microstate 3 x 3
+PermuteColumns(Rest(1, 3))     #   Microstate 1 x 3 (it is a line)
+```
+
+This operation is applied via the [`operate`](@ref) function:
+```julia
+operate(op::PermuteColumns, I::Int, Qi::Int)
+```
+
+#   Arguments
+- `op`: A `PermuteColumns` operation.
+- `I`: Decimal identifier of the microstate (1-based).
+- `Qi`: Index of the permutation in the set `S`.
+
+#   Returns
+The resulting microstate decimal identifier (1-based).
+"""
+struct PermuteColumns{R, C} <: Operation
     Q::Vector{Vector{UInt32}}
 end
 
 PermuteColumns(
-        ::Rect2{R, C, B, E}; 
-        S::Vector{Vector{Int}} = collect(permutations(1:(R * C)))
+        ::Rect2{R, C, B, E};
+        S::Vector{Vector{Int}} = collect(permutations(1:C))
     ) where {R, C, B, E} = PermuteColumns{R, C}(precompute_Q(R, C, S))
 
 ##########################################################################################
@@ -52,3 +85,5 @@ function precompute_Q(rows::Int, columns::Int, S::Vector{Vector{Int}})
 
     return Q
 end
+
+##########################################################################################

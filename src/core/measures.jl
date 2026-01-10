@@ -6,8 +6,17 @@ export QuantificationMeasure, measure
 """
     QuantificationMeasure
 
-Abstract supertype defining an RQA or RMA quantification measure.  
-All quantifiers implemented in the package inherit from this type and define their computation through the [`measure`](@ref) function.
+Abstract supertype defining an RQA or RMA quantification measure.
+
+All quantifiers implemented in the package subtype `QuantificationMeasure` and define their
+computation via the [`measure`](@ref) function.
+
+# Implementations
+- [`Determinism`](@ref)
+- [`Disorder`](@ref)
+- [`Laminarity`](@ref)
+- [`RecurrenceEntropy`](@ref)
+- [`RecurrenceRate`](@ref)
 """
 abstract type QuantificationMeasure end
 
@@ -17,9 +26,12 @@ abstract type QuantificationMeasure end
 """
     measure(qm::QuantificationMeasure, [...])
 
-Compute the quantifier defined by the given [`QuantificationMeasure`](@ref) instance.  
-Each implementation may accept different parameters (`[...]`), depending on the specific quantifier.
+Compute the quantification measure defined by the given [`QuantificationMeasure`](@ref) instance.
+
+The accepted arguments (`[...]`) depend on the specific quantifier implementation.
 """
 function measure(ms::QuantificationMeasure)
     error("There isn't a 'measure' implementation for '$(typeof(ms))'.")
 end
+
+##########################################################################################

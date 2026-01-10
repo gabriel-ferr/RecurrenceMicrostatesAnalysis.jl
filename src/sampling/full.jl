@@ -3,6 +3,20 @@ export Full
 ##########################################################################################
 #   Sampling Mode: Random
 ##########################################################################################
+"""
+    Full <: SamplingMode
+
+Sampling mode that selects **all** possible microstates within the
+[`SamplingSpace`](@ref).
+
+#   Constructor
+```julia
+s = Full()
+```
+
+!!! warning
+    The **Full** sampling mode is not supported for spatial data.
+"""
 struct Full <: SamplingMode end
 
 ##########################################################################################
@@ -30,3 +44,5 @@ end
 #   Implementations: Utils
 ##########################################################################################
 get_num_samples(::Full, space::SSRect2) = space.W * space.H
+
+##########################################################################################

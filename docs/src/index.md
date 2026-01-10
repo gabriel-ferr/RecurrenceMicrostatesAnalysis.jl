@@ -1,5 +1,4 @@
 #   RecurrenceMicrostatesAnalysis.jl
-
 ```@docs
 RecurrenceMicrostatesAnalysis
 ```
@@ -10,43 +9,29 @@ RecurrenceMicrostatesAnalysis
     
 
 ##  About the documentation
-RecurrenceMicrostatesAnalysis.jl documentation was designed to explain how to use the package while also introducing the
-theoretical background of the RMA field. The bibliography used is listed in the [References](@ref)
-section; **remember to cite the appropriate works if you use them**.
+The documentation of **RecurrenceMicrostatesAnalysis.jl** is designed to explain how to use the package while also introducing the theoretical background of the RMA framework. The bibliography used throughout the documentation is listed in the [References](@ref) section; **please remember to cite the appropriate works if you use them**.
 
-We begin this welcome section by introducing the [Input data for RecurrenceMicrostatesAnalysis.jl](@ref). It is very important
-to understand the data types used by the package and their purposes before continuing with the rest of the documentation. We
-also describe the [Output data from RecurrenceMicrostatesAnalysis.jl](@ref), explaining the type of data returned by the package when
-computing distributions of recurrence microstates.
+This welcome section begins with an introduction to the [Input data for RecurrenceMicrostatesAnalysis.jl](@ref). Understanding the data types used by the package and their intended purposes is essential before proceeding with the rest of the documentation. We also describe the [Output data from RecurrenceMicrostatesAnalysis.jl](@ref), explaining the type of data returned when computing recurrence microstate distributions.
 
-the **Tutorial** section explains how to use the package. We start with a brief introduction to the RMA framework and show how to
-compute [Distributions](@ref) using RecurrenceMicrostatesAnalysis.jl. Next, we demonstate how to estimate RQA [Quantifiers](@ref)
-using RMA and discuss several quantifiers defined specifically for RMA. This material forms the "basic level" of the documentation and is sufficient
-to learn how to use the package effectively. We also include an introduction to [Operations](@ref) with recurrence microstates.
+The **Tutorial** section explains how to use the package in practice. It starts with a brief introduction to RMA and demonstrates how to compute [Distributions](@ref) using **RecurrenceMicrostatesAnalysis.jl**. Next, we show how to estimate RQA [Quantifiers](@ref) using RMA and discuss several quantifiers defined specifically for RMA. This material constitutes the *basic level* of the documentation and is sufficient to use the package effectively.
 
-If you want to learn more about RecurrenceMicrostatesAnalysis.jl, the [Recurrence Functions](@ref) section discusses variations in
-computing recurrence between two states, and the [Shapes and Sampling](@ref) section provides explanations about different motif shapes, which
-are used to extract specific information from an abstract Recurrence Plot.
+For users interested in more advanced topics, the [Recurrence Functions](@ref) section discusses different ways of computing recurrence between two states, while the [Shapes and Sampling](@ref) section explains motif shapes used to extract specific information from a Recurrence Plot.
 
-We also provide a pipeline for [GPU](@ref) computations, which we recommend reading if you intend to use this framework. Moreover, the
-[Performance Tips](@ref) section offers advice on improving the performance of RecurrenceMicrostatesAnalysis.jl and avoiding
-common pitfalls.
+We also provide a pipeline for [GPU](@ref) computations, which we recommend reading if you plan to use the GPU backend.
 
-This documentation also includes some sections with applied examples:
+The documentation includes applied examples, such as:
 - [RMA with Machine Learning](@ref)
 
-Finally, if you are a developer interested in contributing to RecurrenceMicrostatesAnalysis.jl, we recommend reading the section
-[RecurrenceMicrostatesAnalysis.jl for Devs](@ref).
+Finally, developers interested in contributing to RecurrenceMicrostatesAnalysis.jl are encouraged to read the [RecurrenceMicrostatesAnalysis.jl for Devs](@ref) section.
 
 ##  Input data for RecurrenceMicrostatesAnalysis.jl
+**RecurrenceMicrostatesAnalysis.jl** accepts three types of input, each associated with a different backend:
 
-RecurrenceMicrostatesAnalysis.jl accepts two types of input (each of them with a different backend):
+- [`StateSpaceSet`](@ref) — used for multivariate time series, datasets, or state-space representations. This type is employed when working with Recurrence Plots (RP) or Cross-Recurrence Plots (CRP). For RP and CRP analyses, we strongly recommend using this data type, as the backend is optimized for this context.
 
-- [`StateSpaceSet`](@ref) — used for multivariate time series, datasets, or state-space sets. It is employed by the backend when working with Recurrence Plots (RP) or Cross-Recurrence Plots (CRP). If you are working with RP or CRP, we strongly recommend using this data type, since the backend is optimized for it in this context.
+- `AbstractArray{<: Real}` — used for spatial data, enabling RMA to be applied within the generalized framework of Spatial Recurrence Plots (SRP) [Marwan2007Spatial](@cite). Although a `Matrix` can be used as a substitute for a [`StateSpaceSet`](@ref), this is **not recommended**, since the `AbstractArray` backend is heavier and incompatible with some features.
 
-- `AbstractArray{<: Real}` — used for spatial data. This allows RMA to be applied in the generalized framework of Spatial Recurrence Plots (SRP) [Marwan2007Spatial](@cite). If you provide a `Matrix`, this input type can also be used instead of a [`StateSpaceSet`](@ref); however, we do **not** recommend it, as the backend for `AbstractArray{<: Real}` is heavier and incompatible with some features.
-
-- `AbstractGPUVector` - used for analysis of time series using the GPU backend. We explain how it works better in the section [GPU](@ref).
+- `AbstractGPUVector` — used for time series analysis with the GPU backend. A better explanation is provided in the [GPU](@ref) and [Computing RMA distributions](@ref) sections.
 
 !!! warning
     RMA with SRP is an open research field. We include this functionality in the package for exploratory purposes, but the method is not
@@ -57,7 +42,6 @@ StateSpaceSet
 ```
 
 ##  Output data from RecurrenceMicrostatesAnalysis.jl
-
 When computing the RMA distribution, RecurrenceMicrostatesAnalysis.jl returns a [`Probabilities`](@ref) structure. This type is
 provided by [ComplexityMeasures.jl](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/complexitymeasures/stable/), allowing this package
 to interoperate naturally with its tools and workflows.

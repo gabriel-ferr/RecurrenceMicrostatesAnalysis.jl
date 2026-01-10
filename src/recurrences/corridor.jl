@@ -3,15 +3,45 @@ export Corridor
 ##########################################################################################
 #   RecurrenceExpression + Constructors
 ##########################################################################################
+"""
+    Corridor <: RecurrenceExpression
+
+Recurrence expression defined by the corridor criterion introduced in
+[Iwanski1998Corridor](@cite):
+```math
+R(\\vec{x}, \\vec{y}) = \\Theta(|\\vec{x} - \\vec{y}| - \\varepsilon_{min}) \\cdot \\Theta(\\varepsilon_{max} - |\\vec{x} - \\vec{y}|),
+```
+where \$\\Theta(\\cdot)\$ denotes the Heaviside function and \$(\\varepsilon_{min}, \\varepsilon_{max})\$ define the minimum and maximum distance
+thresholds for two states to be considered recurrent.
+
+The `Corridor` struct stores the corridor thresholds `ε_min` and `ε_max`, as well as the
+distance `metric` used to evaluate \$|\vec{x} - \vec{y}|\$. The metric must be defined using
+the [Distances.jl](https://github.com/JuliaStats/Distances.jl) package.
+
+#   Constructor
+```julia
+Corridor(ε_min::Real, ε_max::Real; metric::Metric = Euclidean())
+```
+
+#   Examples
+```julia
+Corridor(0.05, 0.27)
+Corridor(0.05, 0.27; metric = Cityblock())
+```
+
+The recurrence evaluation is performed via the [`recurrence`](@ref) function. For GPU
+execution, the corresponding implementation is provided by `gpu_recurrence`.
+"""
 struct Corridor{F <: Real, M <: Metric} <: RecurrenceExpression
     ε_min::F
     ε_max::F
     metric::M
 end
-
+#.........................................................................................
 function Corridor(ε_min::Real, ε_max::Real; metric::Metric = DEFAULT_METRIC)
     return Corridor(ε_min, ε_max, metric)
 end
+
 ##########################################################################################
 #   Implementations
 ##########################################################################################
@@ -47,3 +77,5 @@ end
     distance = @inbounds evaluate(expr.metric, view(x, :, i...), view(y, :, j...))
     return UInt8(distance ≥ expr.ε_min && distance ≤ expr.ε_max)
 end
+
+##########################################################################################

@@ -145,3 +145,24 @@ end
         @test_nothing distribution(x, y, Rect(Corridor(0.05, 0.27; metric = Cityblock()), (2, 2, 1, 2)))
     end
 end
+
+@testset "sampling mode (CPU backend)" begin
+    @testset "RP and CRP" begin
+        x = StateSpaceSet(rand(1000))
+        y = StateSpaceSet(rand(2000))
+        @test_nothing distribution(x, Standard(0.27), 2; sampling = SRandom(0.05))
+        @test_nothing distribution(x, Standard(0.27), 2; sampling = Full())
+
+        @test_nothing distribution(x, y, Standard(0.27), 2; sampling = SRandom(0.05))
+        @test_nothing distribution(x, y, Standard(0.27), 2; sampling = Full())
+    end
+
+    @testset "SRP and CSRP" begin
+        x = rand(1, 100, 100)
+        y = rand(1, 100, 100)
+
+        @test_nothing distribution(x, Rect(Standard(0.27), (2, 2, 1, 2)); sampling = SRandom(0.05))
+
+        @test_nothing distribution(x, y, Rect(Standard(0.27), (2, 2, 1, 2)); sampling = SRandom(0.05))
+    end
+end

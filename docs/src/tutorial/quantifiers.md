@@ -1,14 +1,16 @@
-#   Quantifiers
+# Quantifiers
 
-Quantifiers are measures used to characterize specific properties of a system. 
-Currently, RMA provides five quantifiers that can be computed or estimated from a microstate distribution. 
-Three of them are estimations of classical Recurrence Quantification Analysis (RQA) measures: **recurrence rate**, **determinism**, and **laminarity**. 
-One corresponds to an information-theoretic entropy. 
-And, the final quantifier is the **disorder** measure, which is defined using the microstate distribution as the basis for applying the method.
+Quantifiers are measures used to characterize specific properties of a dynamical system.
+Currently, Recurrence Microstates Analysis (RMA) provides five quantifiers that can be
+computed or estimated from a microstate distribution.
 
-In this section, we describe each of these quantifiers and explain how to compute them using the RecurrenceMicrostatesAnalysis.jl package.
+Three of these correspond to classical Recurrence Quantification Analysis (RQA) measures:
+**recurrence rate**, **determinism**, and **laminarity**. One is an information-theoretic
+entropy measure. The final quantifier is **disorder**, which is defined directly in terms of
+the microstate distribution and exploits symmetry properties of recurrence structures.
 
-All quantifiers implemented in the package inherit from [`QuantificationMeasure`](@ref), and their computation is performed using the [`measure`](@ref) function.
+All quantifiers implemented in the package inherit from [`QuantificationMeasure`](@ref), and
+their computation is performed using the [`measure`](@ref) function.
 
 ```@docs
 QuantificationMeasure
@@ -17,50 +19,79 @@ measure
 
 ##  Recurrence microstates entropy
 
-The recurrence microstates entropy (RME) was introduced in 2018 and marks the beginning of the RMA framework [Corso2018Entropy](@cite). It is defined as the Shannon entropy of the RMA distribution:
+The Recurrence Microstates Entropy (RME) was introduced in 2018 and marks the starting
+point of the RMA framework [Corso2018Entropy](@cite). It is defined as the Shannon entropy of
+the RMA distribution:
 
 ```math
 RME = -\sum_{i = 1}^{2^\sigma} p_i^{(n)} \ln p_i^{(n)},
 ```
 
-where $n$ is the microstate length, $\sigma$ is the number of recurrence elements constrained within microstate (e.g., $\sigma = n^2$ for square microstates), and $p_i^{(n)}$ denotes the probability of the microstate with decimal representation $i$ in the distribution.
+where $n$ is the microstate size, $\sigma$ is the number of recurrence elements constrained
+within the microstate (e.g. $\sigma = n^2$ for square microstates), and $p_i^{(n)}$ denotes
+the probability of the microstate with decimal representation $i$.
 
-In RecurrenceMicrostatesAnalysis.jl, the RME is implemented by the [`RecurrenceEntropy`](@ref) struct.
+In **RecurrenceMicrostatesAnalysis.jl**, the RME is implemented by the [`RecurrenceEntropy`](@ref) struct.
 
 ```@docs
 RecurrenceEntropy
 ```
 
-Since the output of the [`distribution`](@ref) function is a [`Probabilities`](@ref) object, the package also supports other information or complexity measures, provided by the package [ComplexityMeasures.jl](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/complexitymeasures/stable/).
+Since the output of the [`distribution`](@ref) function is a [`Probabilities`](@ref) object, the package also supports other information or complexity measures provided by [ComplexityMeasures.jl](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/complexitymeasures/stable/).
+
+### Quick example
+As an example, consider a uniform random process. The RME as a function of the threshold
+can be computed and visualized as follows:
+```@example quick_rme_example
+using RecurrenceMicrostatesAnalysis, Distributions, CairoMakie
+
+data_len = 10000
+resolution = 50
+
+data = StateSpaceSet(rand(Uniform(0, 1), data_len))
+thres_range = range(0, 1, resolution)
+results = zeros(Float64, resolution)
+
+for i ∈ eachindex(results)
+    dist = distribution(data, thres_range[i], 4)
+    results[i] = measure(RecurrenceEntropy(), dist)
+end
+
+results ./= maximum(results)
+scatterlines(thres_range, results)
+```
 
 ##  Recurrence rate
-The recurrence rate quantifies the proportion of black points in a recurrence plot, serving as a measure of the relative density of recurrence points in the sparse recurrence matrix [Webber2015Recurrence](@cite). In standard RQA, it is defined as
+The Recurrence Rate (RR) quantifies the density of recurrence points in a recurrence plot [Webber2015Recurrence](@cite). In standard RQA, it is defined as
 ```math
 RR = \frac{1}{K^2} \sum_{i,j=1}^K R_{i,j}.
 ```
+where $K$ is the length of the time series.
 
-When estimated using RMA, the recurrence rate is defined as the expected value of the recurrence rate over the microstate distribution:
+When estimated using RMA, RR is defined as the expected recurrence rate over the microstate
+distribution:
 ```math
 RR = \sum_{i = 1}^{2^\sigma} p_i^{(n)} RR_i^{(n)},
 ```
-where $RR_i^{(n)}$ denotes the recurrence rate of the $i$-th microstate. For square microstates, this quantity is given by
+where $RR_i^{(n)}$ denotes the recurrence rate of the $i$-th microstate. For square
+microstates, this quantity is given by
 ```math
 RR_i^{(n)} = \frac{1}{\sigma} \sum_{m,n=1}^n M_{m,n}^{i, (n)},
 ```
-where $\mathbf M_i^{(n)}$ represents the structure of the microstate identified by the decimal index $i$, with size $n$, for a given motif shape (in this case, square).
+with $\mathbf{M}_i^{(n)}$ denoting the microstate structure corresponding to index $i$.
 
-In RecurrenceMicrostatesAnalysis.jl, this quantifier is implemented by the [`RecurrenceRate`](@ref) struct.
-
+In **RecurrenceMicrostatesAnalysis.jl**, RR is implemented by [`RecurrenceRate`](@ref) struct.
 ```@docs
 RecurrenceRate
 ```
 
 ##  Determinism
-In standard RQA, determinism (DET) is defined as the fraction of recurrence points that form diagonal line structures in the recurrence plot [Webber2015Recurrence](@cite):
+In standard RQA, Determinism (DET) measures the fraction of recurrence points forming
+diagonal line structures [Webber2015Recurrence](@cite):
 ```math
 DET = \frac{\sum_{l=d_{min}}^K l~H_D(l)}{\sum_{i,j=1}^N R_{i,j}},
 ```
-where $H_D(l)$ denotes the histogram of diagonal line lengths in the RP, given by
+where $H_D(l)$ is the histogram of diagonal line lengths,
 ```math
 H_D(l)=\sum_{i,j]1}^N(1-R_{i-1,j-1})(1-R_{i+l,j+l})\prod_{k=0}^{l-1}R_{i+k,j+k}.
 ```
@@ -104,7 +135,7 @@ DET\approx 1 - \frac{p_3^{(3)}}{RR},
 ```
 where $p_3^{(3)}$ is the probability of observing the diagonal motif $0~1~0$.
 
-In RecurrenceMicrostatesAnalysis.jl, the computation of DET is implemented by the [`Determinism`](@ref) struct.
+In **RecurrenceMicrostatesAnalysis.jl**, the computation of DET is implemented by the [`Determinism`](@ref) struct.
 ```@docs
 Determinism
 ```
@@ -142,7 +173,7 @@ LAM\approx 1 - \frac{p_3^{(3)}}{RR},
 ```
 where $p_3^{(3)}$ denotes the probability of observing the line motif $0~1~0$.
 
-In RecurrenceMicrostatesAnalysis.jl, the computation of LAM is implemented by the [`Laminarity`](@ref) struct.
+In **RecurrenceMicrostatesAnalysis.jl**, the computation of LAM is implemented by the [`Laminarity`](@ref) struct.
 
 ```@docs
 Laminarity
@@ -159,7 +190,7 @@ This procedure generates a set of equivalent microstates given by
 ```
 This defines an equivalence class of microstates denoted by $\mathcal{M}_a$.
 
-The probability of observing a given microstate $\mathbf M_i^{(n)}$ in the recurrence plot, denoted by $p_i^{(n)}$, is computed using RecurrenceMicrostatesAnalysis.jl.
+The probability of observing a given microstate $\mathbf M_i^{(n)}$ in the recurrence plot, denoted by $p_i^{(n)}$, is computed using **RecurrenceMicrostatesAnalysis.jl**.
 To compute disorder, the probabilities of microstates belonging to the same class must be normalized.
 Thus, for $\mathbf M_i^{(n)} \in \mathcal{M}_a$, the normalized probability within the class is defined as
 ```math
@@ -171,7 +202,7 @@ The information entropy associated with the probability distribution of microsta
 \xi_a(\varepsilon) \stackrel{\mathrm{def}}{=} -\sum_{\mathbf{M}_i^{(n)} \in \mathcal{M}_a} p_i^{(a, n)} \ln p_i^{(a, n)}.
 ```
 This entropy is normalized by $\ln m_a$, where $m_a$ is the number of microstates in the class $\mathcal{M}_a$.
-Using RecurrenceMicrostatesAnalysis.jl, the normalized quantity $\xi_a(\varepsilon) / \ln m_a$ can be computed as
+Using **RecurrenceMicrostatesAnalysis.jl**, the normalized quantity $\xi_a(\varepsilon) / \ln m_a$ can be computed as
 ```@example disorder
 using Distributions, RecurrenceMicrostatesAnalysis
 data = StateSpaceSet(rand(Uniform(0, 1), 1000))
@@ -186,7 +217,7 @@ The total entropy over all classes for a given threshold $\varepsilon$ is define
 \xi(\varepsilon) \stackrel{\mathrm{def}}{=} \frac{1}{A} \sum_{a = 1}^A \frac{\xi_a(\varepsilon)}{\ln m_a},
 ```
 where $A$ is the number of contributing classes and defines the maximum possible amplitude.
-This normalization factor can also be computed using RecurrenceMicrostatesAnalysis.jl:
+This normalization factor can also be computed using **RecurrenceMicrostatesAnalysis.jl**:
 ```@example disorder
 A = RecurrenceMicrostatesAnalysis.get_disorder_norm_factor(Disorder(4), data)
 ```
@@ -201,7 +232,7 @@ Finally, the the *disorder index via symmetry in recurrence microstates* (DISREM
 \Xi = \max_{\varepsilon} \xi(\varepsilon).
 ```
 
-In RecurrenceMicrostatesAnalysis.jl, this quantifier is implemented by the [`Disorder`](@ref) struct.
+In **RecurrenceMicrostatesAnalysis.jl**, this quantifier is implemented by the [`Disorder`](@ref) struct.
 
 ```@docs
 Disorder
@@ -209,7 +240,7 @@ Disorder
 
 ### Computing disorder for compatible time series
 
-Consider a scenario in which a long time series is split into multiple windows. RecurrenceMicrostatesAnalysis.jl provides a compact interface to compute the disorder for each window.
+Consider a scenario in which a long time series is split into multiple windows. **RecurrenceMicrostatesAnalysis.jl** provides a compact interface to compute the disorder for each window.
 
 As an example, consider a time series with 50,000 points consisting of a sine wave with added white noise, alternating every five windows:
 ```@example disorder
@@ -290,6 +321,10 @@ results = measure(dis, dataset, th_min, th_max)
 ```@example disorder
 scatterlines(results)
 ```
+
+!!! info
+    When computing Disorder for compatible time series, the same threshold range is used for all windows. 
+    However, the disorder value of each window corresponds to the maximum over that range, and therefore the optimal threshold may differ between windows.
 
 !!! tip
     Disorder can also be computed using the [`GPU`](@ref) backend:

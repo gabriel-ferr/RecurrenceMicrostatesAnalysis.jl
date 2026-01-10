@@ -4,19 +4,41 @@ export CPUCore, StandardCPUCore
 #   RMACore: CPU
 ##########################################################################################
 """
-    CPUCore{M<:MotifShape, S<:SamplingMode}
-"""
-abstract type CPUCore{M<:MotifShape, S<:SamplingMode} end
+    CPUCore{M<:MicrostateShape, S<:SamplingMode} <: RMACore
 
+Abstract CPU backend that implements the **RecurrenceMicrostatesAnalysis.jl** execution pipeline on
+central processing units.
+
+The package provides a default implementation via [`StandardCPUCore`](@ref).
+
+Concrete subtypes of `CPUCore` must define the following fields:
+- `shape`: the [`MicrostateShape`](@ref) used to construct microstates.
+- `sampling`: the [`SamplingMode`](@ref) used to sample the recurrence space.
+
+#   Implementations
+- [`StandardCPUCore`](@ref)
 """
-    StandardCPUCore{M<:MotifShape, S<:SamplingMode} <: CPUCore{M, S}
+abstract type CPUCore{M<:MicrostateShape, S<:SamplingMode} <: RMACore end
+#.........................................................................................
 """
-struct StandardCPUCore{M<:MotifShape, S<:SamplingMode} <: CPUCore{M, S}
+    StandardCPUCore{M<:MicrostateShape, S<:SamplingMode} <: CPUCore{M, S}
+
+Default CPU backend implementation for **RecurrenceMicrostatesAnalysis.jl**.
+
+This type provides the standard execution pipeline for computing recurrence microstate distributions
+on CPU devices.
+
+#   Initialization
+```julia
+core = CPUCore(shape, sampling)
+```
+"""
+struct StandardCPUCore{M<:MicrostateShape, S<:SamplingMode} <: CPUCore{M, S}
     shape::M
     sampling::S
 end
-
-CPUCore(shape::M, sampling::S) where {M<:MotifShape, S<:SamplingMode} = StandardCPUCore(shape, sampling)
+#.........................................................................................
+CPUCore(shape::M, sampling::S) where {M<:MicrostateShape, S<:SamplingMode} = StandardCPUCore(shape, sampling)
 
 ##########################################################################################
 #   Implementation: compute_motif
@@ -50,34 +72,44 @@ end
 """
     histogram(core::StandardCPUCore, [x], [y]; kwargs...)
 
-Count the microstates of an "abstract" RP constructed using `[x]` and `[y]`.
-If `[x]` and `[y]` are identical, the result corresponds to a Recurrence Plot (RP); otherwise, it corresponds to a Cross-Recurrence Plot (CRP).
-The output is a histogram of recurrence microstates for the given input data as a [`Counts`](@ref) structure.
+Compute the histogram of recurrence microstates for an abstract recurrence structure constructed
+from the input data `[x]` and `[y]`.
 
-This method implements the CPU backend, based on a [`CPUCore`](@ref), specifically a [`StandardCPUCore`](@ref).
+If `[x]` and `[y]` are identical, the result corresponds to a Recurrence Plot (RP); otherwise, it
+corresponds to a Cross-Recurrence Plot (CRP).
 
-### Input
-- `core`: A [`StandardCPUCore`](@ref), which defines how the backend computation is performed.
-- `[x]`: Input data, provided as a [`StateSpaceSet`](@ref) or an `AbstractArray`.
-- `[y]`: Input data, provided as a [`StateSpaceSet`](@ref) or an `AbstractArray`.
+The result is returned as a [`Counts`](@ref) object representing the histogram of recurrence
+microstates for the given input data.
+
+This method implements the CPU backend using a [`CPUCore`](@ref), specifically the
+[`StandardCPUCore`](@ref) implementation.
+
+### Arguments
+- `core`: A [`StandardCPUCore`](@ref) defining the CPU backend configuration.
+- `[x]`: Input data provided as a [`StateSpaceSet`](@ref) or an `AbstractArray`.
+- `[y]`: Input data provided as a [`StateSpaceSet`](@ref) or an `AbstractArray`.
 
 !!! note
-    [`StateSpaceSet`](@ref) and `AbstractArray` use different backends and therefore different internal histogram implementations.  
-    However, both functions share the same method signature, differing only in the input data format.
+    [`StateSpaceSet`](@ref) and `AbstractArray` inputs use different internal backends and therefore
+    different histogram implementations. Both interfaces share the same method signature, differing
+    only in the input data representation.
 
 ### Keyword Arguments
-- `threads`: Number of threads used to compute the histogram. By default, this is set to `Threads.nthreads()`, which can be specified at Julia startup using -- using `--threads N` or via the environment variable `JULIA_NUM_THREADS`.
+- `threads`: Number of threads used to compute the histogram. By default, this is set to
+  `Threads.nthreads()`, which can be specified at Julia startup using `--threads N` or via the
+  `JULIA_NUM_THREADS` environment variable.
 
 ### Examples
 - Time series:
 ```julia
+ssset = StateSpaceSet(rand(Float64, (1000)))
 core = CPUCore(Rect(Standard(0.27), 2), SRandom(0.05))
 dist = histogram(core, ssset, ssset)
 ```
 
 - Spatial data:
 ```julia
-spatialdata = rand(Uniform(0, 1), (3, 50, 50))
+spatialdata = rand(Float64, (3, 50, 50))
 core = CPUCore(Rect(Standard(0.5), (2, 2, 1, 1)), SRandom(0.05))
 dist = histogram(core, spatialdata, spatialdata)
 ```
@@ -175,16 +207,15 @@ end
 ##########################################################################################
 #   Implementation: distribution
 ##########################################################################################
-
 distribution(
     x::StateSpaceSet,
     y::StateSpaceSet,
-    shape::MotifShape;
+    shape::MicrostateShape;
     rate::Float64 = 0.05,
     sampling::SamplingMode = SRandom(rate),
     threads::Int = Threads.nthreads()
 ) = distribution(CPUCore(shape, sampling), x, y; threads = threads)
-
+#.........................................................................................
 distribution(
     x::StateSpaceSet, 
     y::StateSpaceSet,
@@ -194,7 +225,7 @@ distribution(
     sampling::SamplingMode = SRandom(rate),
     threads::Int = Threads.nthreads()
 ) = distribution(CPUCore(Rect(expr, n), sampling), x, y; threads = threads)
-
+#.........................................................................................
 distribution(
     x::StateSpaceSet,
     y::StateSpaceSet,
@@ -205,15 +236,15 @@ distribution(
     threads::Int = Threads.nthreads(),
     metric::Metric = DEFAULT_METRIC
 ) = distribution(x, y, Standard(ε; metric = metric), n; rate = rate, sampling = sampling, threads = threads)
-
+#.........................................................................................
 distribution(
     x::StateSpaceSet,
-    shape::MotifShape;
+    shape::MicrostateShape;
     rate::Float64 = 0.05,
     sampling::SamplingMode = SRandom(rate),
     threads::Int = Threads.nthreads()
 ) = distribution(x, x, shape; rate = rate, sampling = sampling, threads = threads)
-
+#.........................................................................................
 distribution(
     x::StateSpaceSet,
     expr::RecurrenceExpression,
@@ -222,7 +253,7 @@ distribution(
     sampling::SamplingMode = SRandom(rate),
     threads::Int = Threads.nthreads()
 ) = distribution(x, x, expr, n; rate = rate, sampling = sampling, threads = threads)
-
+#.........................................................................................
 distribution(
     x::StateSpaceSet,
     ε::Float64,
@@ -232,48 +263,55 @@ distribution(
     threads::Int = Threads.nthreads(),
     metric::Metric = DEFAULT_METRIC
 ) = distribution(x, x, ε, n; rate = rate, sampling = sampling, threads = threads, metric = metric)
-
+#.........................................................................................
 distribution(
     x::AbstractArray{<:Real},
     y::AbstractArray{<:Real},
-    shape::MotifShape;
+    shape::MicrostateShape;
     rate::Float64 = 0.05,
     sampling::SamplingMode = SRandom(rate),
     threads::Int = Threads.nthreads()
 ) = distribution(CPUCore(shape, sampling), x, y; threads = threads)
-
+#.........................................................................................
 distribution(
     x::AbstractArray{<:Real},
-    shape::MotifShape;
+    shape::MicrostateShape;
     rate::Float64 = 0.05,
     sampling::SamplingMode = SRandom(rate),
     threads::Int = Threads.nthreads()
 ) = distribution(x, x, shape; rate = rate, sampling = sampling, threads = threads)
-
+#.........................................................................................
 """
     distribution(core::CPUCore, [x], [y]; kwargs...)
 
-Computes an RMA distribution using `[x]` and `[y]` as input and a CPU backend configuration specified by `core`, which must be a [`CPUCore`](@ref). 
-The inputs `[x]` and `[y]` must be provided as [`StateSpaceSet`](@ref) objects for time-series data, or as `AbstractArray`s for spatial data.
+Compute an RMA distribution for the input data `[x]` and `[y]` using a CPU backend configuration
+defined by `core`, which must be a [`CPUCore`](@ref).
 
-### Input
-- `core`: A [`CPUCore`](@ref) defining the configuration of the [`MotifShape`](@ref), [`RecurrenceExpression`](@ref), and [`SamplingMode`](@ref).
-- `[x]`: Input data, given as a [`StateSpaceSet`](@ref) or an `AbstractArray`.
-- `[y]`: Input data, given as a [`StateSpaceSet`](@ref) or an `AbstractArray`.
+For time-series analysis, the inputs `[x]` and `[y]` must be provided as [`StateSpaceSet`](@ref)
+objects. For spatial analysis, the inputs must be provided as `AbstractArray`s.
+
+### Arguments
+- `core`: A [`CPUCore`](@ref) defining the [`MicrostateShape`](@ref),
+  [`RecurrenceExpression`](@ref), and [`SamplingMode`](@ref) used in the computation.
+- `[x]`: Input data provided as a [`StateSpaceSet`](@ref) or an `AbstractArray`.
+- `[y]`: Input data provided as a [`StateSpaceSet`](@ref) or an `AbstractArray`.
 
 ### Keyword Arguments
-- `threads`: Number of threads which used to compute the distribution. By default, this is set to `Threads.nthreads()`, which can be specified at Julia startup using -- using `--threads N` or via the environment variable `JULIA_NUM_THREADS`.
+- `threads`: Number of threads used to compute the distribution. By default, this is set to
+  `Threads.nthreads()`, which can be specified at Julia startup using `--threads N` or via the
+  `JULIA_NUM_THREADS` environment variable.
 
 ### Examples
 - Time series:
 ```julia
+ssset = StateSpaceSet(rand(Float64, (1000)))
 core = CPUCore(Rect(Standard(0.27), 2), SRandom(0.05))
 dist = distribution(core, ssset, ssset)
 ```
 
 - Spatial data:
 ```julia
-spatialdata = rand(Uniform(0, 1), (3, 50, 50))
+spatialdata = rand(Float64, (3, 50, 50))
 core = CPUCore(Rect(Standard(0.5), (2, 2, 1, 1)), SRandom(0.05))
 dist = distribution(core, spatialdata, spatialdata)
 ```
@@ -287,3 +325,4 @@ function distribution(
     hist = histogram(core, x, y; threads = threads)
     return Probabilities(hist)
 end
+##########################################################################################

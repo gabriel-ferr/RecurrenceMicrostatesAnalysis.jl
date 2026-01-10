@@ -6,23 +6,26 @@ export Determinism
 """
     Determinism <: QuantificationMeasure
 
-Defines the *Determinism* (DET) quantification measure. 
-The computation of DET is performed using the [`measure`](@ref) function, for which two implementations are provided.
+Define the *Determinism* (DET) quantification measure.
 
-## Using a distribution
+DET can be computed either from a distribution of recurrence microstates or directly from
+time-series data. In both cases, the computation is performed via the [`measure`](@ref)
+function.
+
+#   Using a distribution
 ```julia
 measure(::Determinism, dist::Probabilities)
 ```
 
-### Input
-- The `QuantificationMeasure`.
-- `dist`: a distribution of recurrence microstates. The distribution must be computed from **square** or **diagonal** microstates with size 3.
+##  Arguments
+- `dist`: A distribution of recurrence microstates. The distribution must be computed from
+    **square** or **diagonal** microstates of size 3.
 
-### Output
-Returns a `Float64` corresponding to the estimated determinism.
+##  Returns
+A `Float64` corresponding to the estimated determinism.
 
-### Examples
-- Using **square** microstates:
+##  Examples
+### Using square microstates
 ```julia
 using RecurrenceMicrostatesAnalysis, Distributions
 data = StateSpaceSet(rand(Uniform(0, 1), 1000))
@@ -30,7 +33,7 @@ dist = distribution(data, 0.27, 3)
 det = measure(Determinism(), dist)
 ```
 
-- Using **diagonal** microstates:
+### Using diagonal microstates
 ```julia
 using RecurrenceMicrostatesAnalysis, Distributions
 data = StateSpaceSet(rand(Uniform(0, 1), 1000))
@@ -38,20 +41,20 @@ dist = distribution(data, Diagonal(Standard(0.27), 3))
 det = measure(Determinism(), dist)
 ```
 
-## Using a time series
+#   Using a time series
 ```julia
 measure(::Determinism, [x]; kwargs...)
 ```
 
-### Input
-- The `QuantificationMeasure`.
-- `[x]`: time-series data provided as a [`StateSpaceSet`](@ref).
+##  Arguments
+- `[x]`: Time-series data provided as a [`StateSpaceSet`](@ref).
 
-### Output
-Returns a `Float64` corresponding to the estimated determinism.
+##  Returns
+A `Float64` corresponding to the estimated determinism.
 
-### Keyword arguments
-- `threshold`: threshold used to compute the RMA distribution. By default, this is the threshold that maximizes the RME.
+##  Keyword Arguments
+- `threshold`: Threshold used to compute the RMA distribution. By default, this is chosen as
+    the threshold that maximizes the recurrence microstate entropy (RME).
 
 ### Examples
 ```julia
@@ -61,7 +64,7 @@ det = measure(Determinism(), data)
 ```
 
 !!! note
-    When a time series is provided as input, RecurrenceMicrostatesAnalysis.jl uses [`Diagonal`](@ref) microstates by default.
+    When time-series data are provided directly, RecurrenceMicrostatesAnalysis.jl uses [`Diagonal`](@ref) microstates by default.
 """
 struct Determinism <: QuantificationMeasure end
 
@@ -103,3 +106,5 @@ function measure(::Determinism, x::StateSpaceSet; threshold::Real = optimize(Thr
     dist = distribution(x, Diagonal(Standard(threshold), 3))
     measure(Determinism(), dist)
 end
+
+##########################################################################################

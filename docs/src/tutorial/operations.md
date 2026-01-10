@@ -1,3 +1,0 @@
-#   Operations
-
-##  Permutations and Transposition

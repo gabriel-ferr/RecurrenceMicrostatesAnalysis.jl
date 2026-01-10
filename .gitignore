@@ -7,4 +7,6 @@ Manifest.toml
 *vscode
 *.css
 *.scss
+test/*.png
+test/*.bson
 *style.jl

@@ -6,33 +6,39 @@ export Disorder
 """
     Disorder{N} <: QuantificationMeasure
 
-Defines the *Disorder* quantifier for microstates of size `N`. The structure contains the `labels`, which identify the microstates belonging to each equivalence class \$\\mathcal{M}_a\$.
+Define the *Disorder* quantification measure for microstates of size `N` [Flauzino2025Disorder](@cite).
 
-To initialize the *Disorder* struct, use:
+The `Disorder` struct stores a set of `labels` that identify the microstates belonging to
+each equivalence class \$\\mathcal{M}_a\$.
+
+#   Constructor
 ```julia
 Disorder(N)
 ```
-Here, \$N\$ must be equal to 2, 3, 4, or 5. Computing disorder for large values of \$N\$ is currently not supported, as it would require a prohibitive amount of computational memory with the current implementation.
+Here, \$N\$ must be equal to 2, 3, 4, or 5. Computing disorder for larger values of \$N\$ is
+currently not supported, as it would require a prohibitive amount of memory with the
+current implementation.
 
-The computation of *Disorder* is performed using the [`measure`](@ref) function:
+The computation of *Disorder* is performed via the [`measure`](@ref) function:
 ```julia
 measure(settings::Disorder{N}, [x]; kwargs...)
 ```
 
-### Input
-- The `QuantificationMeasure`.
-- `[x]`: time-series data provided as a [`StateSpaceSet`](@ref).
+#   Arguments
+- `[x]`: Time-series data provided as a [`StateSpaceSet`](@ref).
 
-### Output
-Returns a `Float64` corresponding to the disorder value (\$\\Xi\$).
+#   Returns
+A `Float64` corresponding to the disorder value (\$\\Xi\$).
 
-### Keyword arguments
-- `th`: threshold value used to maximize disorder. To improve computational performance, this parameter defines a reference value that limits the search range of thresholds. By default, it is set to the threshold that maximizes disorder for a sampling rate of \$5%\$.
-- `th_min`: minimum threshold value defining the search range. By default, this is set to `0.85 * th`.
-- `th_max`: maximum threshold value defining the search range. By default, this is set to `1.25 * th`.
-- `num_tests`: number of threshold values evaluated within the specified range. The default value is `40`.
+#   Keyword Arguments
+- `th`: Reference threshold used to maximize disorder. To improve computational performance,
+    this value limits the search range of thresholds. By default, it is set to the threshold
+    that maximizes disorder for a sampling rate of \$5%\$.
+- `th_min`: Minimum threshold defining the search range. By default, this is set to `0.85 * th`.
+- `th_max`: Maximum threshold defining the search range. By default, this is set to `1.25 * th`.
+- `num_tests`: Number of threshold values evaluated within the specified range. The default value is `40`.
 
-### Examples
+#   Examples
 ```julia
 using RecurrenceMicrostatesAnalysis, Distributions
 data = StateSpaceSet(rand(Uniform(0, 1), 1000))
@@ -42,8 +48,9 @@ disrem = measure(Disorder(4), data)
 struct Disorder{N} <: QuantificationMeasure
     labels::Vector{Vector{Int}}
 end
-
+#.........................................................................................
 Disorder(N::Int = 3) = 1 < N < 6 ? Disorder{N}(compute_labels(N)) : error("It is not possible to compute disorder for `N = $N`.")
+
 ##########################################################################################
 #   Implementation: measure
 ##########################################################################################
@@ -69,7 +76,7 @@ function measure(settings::Disorder{N}, class::Int, probs::Probabilities) where 
 
     return s
 end
-
+#.........................................................................................
 function measure(settings::Disorder{N}, probs::Probabilities, norm_param::Int) where {N}
     total_entropy = 0.0
     for c in 2:length(settings.labels) - 1
@@ -78,7 +85,7 @@ function measure(settings::Disorder{N}, probs::Probabilities, norm_param::Int) w
 
     return total_entropy / norm_param
 end
-
+#.........................................................................................
 function measure(settings::Disorder{N}, x::StateSpaceSet; th::Float64 = optimize(Threshold(), Disorder(N), x)[1], th_min::Float64 = 0.85 * th, th_max::Float64 = 1.25 * th, num_tests::Int = 40) where {N}
     A = get_disorder_norm_factor(settings, x)
     values = zeros(typeof(th), num_tests)
@@ -91,7 +98,7 @@ function measure(settings::Disorder{N}, x::StateSpaceSet; th::Float64 = optimize
 
     return maximum(values)
 end
-
+#.........................................................................................
 function measure(settings::Disorder{N}, dataset::Vector{<:AbstractGPUVector{SVector{D, Float32}}}, th_min::Float32, th_max::Float32; num_tests::Int = 40, metric::GPUMetric = GPUEuclidean()) where {N, D}
     A = _norm_factor(Val(N), Val(D))
     values = zeros(Float32, num_tests, length(dataset))
@@ -114,7 +121,7 @@ function measure(settings::Disorder{N}, dataset::Vector{<:AbstractGPUVector{SVec
 
     return results
 end
-
+#.........................................................................................
 function measure(settings::Disorder{N}, dataset::Vector{StateSpaceSet}, th_min::Float64, th_max::Float64; num_tests::Int = 40, metric::Metric = DEFAULT_METRIC) where {N}
     A = get_disorder_norm_factor(settings, dataset[1])
     values = zeros(Float64, num_tests, length(dataset))
@@ -136,11 +143,12 @@ function measure(settings::Disorder{N}, dataset::Vector{StateSpaceSet}, th_min::
 
     return results
 end
+
 ##########################################################################################
 #   Utils
 ##########################################################################################
-
 get_disorder_norm_factor(::Disorder{N}, ::StateSpaceSet{D, T, V}) where {N, D, T, V} = _norm_factor(Val(N), Val(D))
+#.........................................................................................
 _norm_factor(::Val{2}, ::Val{D}) where D = 4
 _norm_factor(::Val{3}, ::Val{D}) where D = D > 1 ? 24 : 23
 _norm_factor(::Val{4}, ::Val{D}) where D = D > 1 ? 190 : 145
@@ -211,3 +219,5 @@ function compute_labels(N::Int)
 
     return labels
 end
+
+##########################################################################################

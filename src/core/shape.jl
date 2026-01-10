@@ -1,34 +1,38 @@
-export MotifShape, compute_motif
+export MicrostateShape
 
 ##########################################################################################
-#   MotifShape
+#   MicrostateShape
 ##########################################################################################
 """
-    MotifShape
+    MicrostateShape
+
+Abstract supertype defining the basic structure and layout of a microstate (or motif).
+
+A `MicrostateShape` specifies which relative positions are retrieved from the data to evaluate
+recurrences, and how these binary recurrence values are interpreted and mapped to a decimal
+representation for counting.
+
+All subtypes of `MicrostateShape` must include a field `expr`, which defines the
+[`RecurrenceExpression`](@ref) used to compute recurrences.
+
+# Implementations
+- [`Diagonal`](@ref)
+- [`Rect`](@ref)
+- [`Triangle`](@ref)
 """
-abstract type MotifShape end
+abstract type MicrostateShape end
 
 ##########################################################################################
 #   Index computation
 ##########################################################################################
-#   Based on time series: (CPU & GPU)
-#.........................................................................................
-function compute_motif(
-    shape::MotifShape,
-    x::StateSpaceSet,
-    y::StateSpaceSet,
-    ::Int,
-    ::Int,
-    power_vector::SVector{N, Int},
-    offsets::SVector{N, Int}
-) where {N}
-    throw("The index computation is not implemented for a motif shape of type '$(typeof(shape))' with input types: \n\t x: '$(typeof(x))'\n\t y: '$(typeof(y))')")
+function compute_motif()
+    throw("The index computation is not implemented without arguments.")
 end
 #.........................................................................................
 #   Based on spatial data: (CPU only)
 #.........................................................................................
 function compute_motif(
-    shape::MotifShape,
+    shape::MicrostateShape,
     x::AbstractArray{<: Real},
     y::AbstractArray{<: Real},
     ::Vector{Int},
@@ -40,14 +44,16 @@ end
 ##########################################################################################
 #   Utils: number of recurrences and power vector.
 ##########################################################################################
-function get_histogram_size(shape::MotifShape)
+function get_histogram_size(shape::MicrostateShape)
     error("The histogram size is not implemented for a motif shape of type '$(typeof(shape))'.")
 end
-
-function get_power_vector(core::RMACore, shape::MotifShape)
+#.........................................................................................
+function get_power_vector(core::RMACore, shape::MicrostateShape)
     error("The power vector is not implemented for a motif shape of type '$(typeof(shape))' and a core of type '$(typeof(core))'.")
 end
-
-function get_offsets(core::RMACore, shape::MotifShape)
+#.........................................................................................
+function get_offsets(core::RMACore, shape::MicrostateShape)
     error("Motif's offsets is not implemented for a motif shape of type '$(typeof(shape))' and a core of type '$(typeof(core))'.")
 end
+
+##########################################################################################

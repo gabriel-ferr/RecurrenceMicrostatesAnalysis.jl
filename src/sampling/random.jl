@@ -5,16 +5,34 @@ export SRandom
 ##########################################################################################
 """
     SRandom{F<:Real} <: SamplingMode
+
+Sampling mode that randomly selects microstate positions \$(i, j)\$ within the
+[`SamplingSpace`](@ref).
+
+#   Constructors
+```julia
+SRandom(num_samples::Int)
+SRandom(rate::Union{Float32, Float64})
+```
+
+The sampling mode can be initialized either by specifying the exact number of microstates
+to sample or by providing a fraction of the total number of possible microstates.
+
+#   Examples
+```julia
+s = SRandom(1000)   # Specify the exact number of sampled microstates
+s = SRandom(0.05)   # Specify a fraction of the total possible microstates
+```
 """
 struct SRandom{F <: Real} <: SamplingMode
     sampling_factor::F
 end
-
+#.........................................................................................
 function SRandom(num_samples::Int)
     @assert num_samples ≥ 1 "The number of samples must be greater than 1."
     return SRandom{Int}(num_samples)
 end 
-
+#.........................................................................................
 function SRandom(rate::Union{Float32, Float64})
     @assert rate > 0 "The sampling rate must be greater than 0."
     @assert rate ≤ 1.0 "The sampling rate must be smaller than 1."
@@ -52,6 +70,8 @@ end
 ##########################################################################################
 get_num_samples(mode::SRandom{<:Integer}, ::SSRect2) = mode.sampling_factor
 get_num_samples(mode::SRandom{<:Real}, space::SSRect2) = ceil(Int, mode.sampling_factor * space.W * space.H)
-
+#.........................................................................................
 get_num_samples(mode::SRandom{<:Integer}, ::SSRectN) = mode.sampling_factor
 get_num_samples(mode::SRandom{<:Real}, space::SSRectN) = ceil(Int, mode.sampling_factor * reduce(*, space.space))
+
+##########################################################################################

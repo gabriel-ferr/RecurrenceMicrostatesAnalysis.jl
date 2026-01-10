@@ -6,22 +6,24 @@ export RecurrenceRate
 """
     RecurrenceRate <: QuantificationMeasure
 
-Defines the *Recurrence Rate* (RR) quantification measure. 
-The computation of RR is performed using the [`measure`](@ref) function, for which two implementations are provided.
+Define the *Recurrence Rate* (RR) quantification measure.
 
-## Using a distribution
+RR can be computed either from a distribution of recurrence microstates or directly from
+time-series data. In both cases, the computation is performed via the [`measure`](@ref)
+function.
+
+#   Using a distribution
 ```julia
 measure(::RecurrenceRate, dist::Probabilities)
 ```
 
-### Input
-- The `QuantificationMeasure`.
-- `dist`: a distribution of recurrence microstates.
+##  Arguments
+- `dist`: A distribution of recurrence microstates.
 
-### Output
-Returns a `Float64` corresponding to the estimated Recurrence Rate.
+##  Returns
+A `Float64` corresponding to the estimated recurrence rate.
 
-### Examples
+##  Examples
 ```julia
 using RecurrenceMicrostatesAnalysis, Distributions
 data = StateSpaceSet(rand(Uniform(0, 1), 1000))
@@ -29,22 +31,22 @@ dist = distribution(data, 0.27, 3)
 rr = measure(RecurrenceRate(), dist)
 ```
 
-## Using a time series
+#   Using a time series
 ```julia
 measure(::RecurrenceRate, [x]; kwargs...)
 ```
-### Input
-- The `QuantificationMeasure`.
-- `[x]`: time-series data provided as a [`StateSpaceSet`](@ref).
+##  Arguments
+- `[x]`: Time-series data provided as a [`StateSpaceSet`](@ref).
 
-### Output
-Returns a `Float64` corresponding to the estimated Recurrence Rate.
+##  Returns
+A `Float64` corresponding to the estimated recurrence rate.
 
-### Keyword arguments
-- `n`: an `Integer` which defines the microstates size. The default value is `3`.
-- `threshold`: threshold used to compute the RMA distribution. By default, this is the `threshold` that maximizes the RME.
+##  Keyword Arguments
+- `n`: Integer defining the microstate size. The default value is `3`.
+- `threshold`: Threshold used to compute the RMA distribution. By default, this is chosen as
+    the threshold that maximizes the recurrence microstate entropy (RME).
 
-### Examples
+##  Examples
 ```julia
 using RecurrenceMicrostatesAnalysis, Distributions
 data = StateSpaceSet(rand(Uniform(0, 1), 1000))
@@ -76,3 +78,5 @@ function measure(::RecurrenceRate, x::StateSpaceSet; n::Integer = 3, threshold::
     dist = distribution(x, threshold, n)
     return measure(RecurrenceRate(), dist)
 end
+
+##########################################################################################

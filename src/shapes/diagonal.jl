@@ -1,12 +1,35 @@
 export Diagonal
 
 ##########################################################################################
-#   MotifShape: Diagonal + Constructors and sub-types
+#   MicrostateShape: Diagonal + Constructors and sub-types
 ##########################################################################################
 """
-    Diagonal{N, B, E<:RecurrenceExpression} <: MotifShape
+    Diagonal <: MicrostateShape
+
+Define a diagonal microstate shape, which captures recurrences along diagonals of a
+Recurrence Plot (RP).
+
+#   Constructor
+```julia
+Diagonal(expr::E, N::Int; B::Int = 2)
+```
+where `expr` is the [`RecurrenceExpression`](@ref) used to evaluate recurrences and `N`
+defines the length of the diagonal microstate.
+
+#   Example
+```julia
+diagonal = Diagonal(expr, 3)
+```
+
+!!! info
+    **Diagonal** microstates are compatible with spatial data. However, they do not capture
+    hyper-diagonals in Spatial Recurrence Plots (SRP). Only diagonals defined by sequential
+    recurrences are supported, such as:
+    ```math
+    R_{i_1,i_2,j_1,j_2}, R_{i_1 + 1,i_2 + 1,j_1 + 1,j_2 + 1}, R_{i_1 + 2,i_2 + 2,j_1 + 2,j_2 + 2}, \\ldots, R_{i_1 + n - 1,i_2 + n - 1,j_1 + n - 1,j_2 + n - 1}
+    ```
 """
-struct Diagonal{N, B, E<:RecurrenceExpression} <: MotifShape
+struct Diagonal{N, B, E<:RecurrenceExpression} <: MicrostateShape
     expr::E
 end
 
@@ -21,7 +44,7 @@ SamplingSpace(
     ::Diagonal{N, B, E}, 
     x::Union{StateSpaceSet, AbstractGPUVector{SVector{D, Float32}}}, 
     y::Union{StateSpaceSet, AbstractGPUVector{SVector{D, Float32}}}
-) where {N, B, E<:RecurrenceExpression, D} = SSRect2(length(x) - N, length(y) - N)
+) where {N, B, E<:RecurrenceExpression, D} = SSRect2(length(x) - N + 1, length(y) - N + 1)
 
 function SamplingSpace(
     ::Diagonal{N, B, E}, 

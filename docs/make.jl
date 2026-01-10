@@ -10,11 +10,9 @@ pages = [
     "Tutorial" => [
         "Distributions" => "tutorial/distributions.md",
         "Quantifiers" => "tutorial/quantifiers.md",
-        "Operations" => "tutorial/operations.md",
         "Recurrence Functions" => "tutorial/recurrences.md",
         "Shapes and Sampling" => "tutorial/shapes_and_sampling.md",
         "GPU" => "tutorial/gpu.md",
-        "Performance Tips" => "tutorial/tips.md",
         "Utils" => "tutorial/utils.md",
     ],
     "Examples" => [

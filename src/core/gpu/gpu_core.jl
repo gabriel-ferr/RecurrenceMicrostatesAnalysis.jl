@@ -4,20 +4,45 @@ export GPUCore, StandardGPUCore
 #   RMACore: GPU
 ##########################################################################################
 """
-    GPUCore
-"""
-abstract type GPUCore{B, M<:MotifShape, S<:SamplingMode} end
+    GPUCore{B, M<:MicrostateShape, S<:SamplingMode} <: RMACore
 
+Abstract GPU backend that implements the **RecurrenceMicrostatesAnalysis.jl** execution pipeline on
+graphics processing units.
+
+The package provides a default implementation via [`StandardGPUCore`](@ref).
+
+Concrete subtypes of `GPUCore` must define the following fields:
+- `backend`: the GPU backend device (e.g. `CUDABackend`, `MetalBackend`).
+- `shape`: the [`MicrostateShape`](@ref) used to construct microstates.
+- `sampling`: the [`SamplingMode`](@ref) used to sample the recurrence space.
+
+#   Implementations
+- [`StandardGPUCore`](@ref)
 """
-    StandardGPUCore{B, M<:MotifShape, S<:SamplingMode} <: GPUCore{B, M, S}
+abstract type GPUCore{B, M<:MicrostateShape, S<:SamplingMode} <: RMACore end
+
+##########################################################################################
 """
-struct StandardGPUCore{B, M<:MotifShape, S<:SamplingMode} <: GPUCore{B, M, S}
+    StandardGPUCore{B, M<:MicrostateShape, S<:SamplingMode} <: GPUCore{B, M, S}
+
+Default GPU backend implementation for **RecurrenceMicrostatesAnalysis.jl**.
+
+This type provides the standard execution pipeline for computing recurrence microstate distributions
+on GPU devices.
+
+#   Initialization
+```julia
+core = GPUCore(backend, shape, sampling)
+```
+"""
+struct StandardGPUCore{B, M<:MicrostateShape, S<:SamplingMode} <: GPUCore{B, M, S}
     backend::B
     shape::M
     sampling::S
 end
 
-GPUCore(backend::B, shape::M, sampling::S) where {B, M<:MotifShape, S<:SamplingMode} = StandardGPUCore(backend, shape, sampling)
+##########################################################################################
+GPUCore(backend::B, shape::M, sampling::S) where {B, M<:MicrostateShape, S<:SamplingMode} = StandardGPUCore(backend, shape, sampling)
 
 ##########################################################################################
 #   Implementation: compute_motif
@@ -43,22 +68,28 @@ end
 """
     histogram(core::StandardGPUCore, [x], [y]; kwargs...)
 
-Count the microstates of an "abstract" RP constructed using `[x]` and `[y]`.
-If `[x]` and `[y]` are identical, the result corresponds to a Recurrence Plot (RP); otherwise, it corresponds to a Cross-Recurrence Plot (CRP).
-The output is a histogram of recurrence microstates for the given input data as a [`Counts`](@ref) structure.
+Compute the histogram of recurrence microstates for an abstract recurrence structure constructed
+from the input data `[x]` and `[y]`.
+
+If `[x]` and `[y]` are identical, the result corresponds to a Recurrence Plot (RP); otherwise, it
+corresponds to a Cross-Recurrence Plot (CRP).
+
+The result is returned as a [`Counts`](@ref) object representing the histogram of recurrence
+microstates for the given input data.
 
 !!! note
-    The output is copied from GPU memory back to the CPU.
+    The resulting histogram is copied from GPU memory back to the CPU.
 
-This method implements the GPU backend, based on a [`GPUCore`](@ref), specifically a [`StandardGPUCore`](@ref).
+This method implements the GPU backend using a [`GPUCore`](@ref), specifically the
+[`StandardGPUCore`](@ref) implementation.
 
-### Input
-- `core`: A [`StandardGPUCore`](@ref), which defines how the backend computation is performed.
-- `[x]`: Input data, provided as an `AbstractGPUVector`.
-- `[y]`: Input data, provided as an `AbstractGPUVector`.
+### Arguments
+- `core`: A [`StandardGPUCore`](@ref) defining the GPU backend configuration.
+- `[x]`: Input data provided as an `AbstractGPUVector`.
+- `[y]`: Input data provided as an `AbstractGPUVector`.
 
 ### Keyword Arguments
-- `groupsize`: Number of threads per workgroup on the GPU device.
+- `groupsize`: Number of threads per GPU workgroup.
 
 ### Examples
 ```julia
@@ -129,17 +160,16 @@ end
 ##########################################################################################
 #   Implementation: distribution
 ##########################################################################################
-
 distribution(
     x::AbstractGPUVector{SVector{N, Float32}},
     y::AbstractGPUVector{SVector{N, Float32}},
-    shape::MotifShape;
+    shape::MicrostateShape;
     rate::Float32 = 0.05f0,
     sampling::SamplingMode = SRandom(rate),
     groupsize::Int = 256,
     backend = get_backend(x)
 ) where {N} = distribution(GPUCore(backend, shape, sampling), x, y; groupsize = groupsize)
-
+#.........................................................................................
 distribution(
     x::AbstractGPUVector{SVector{N, Float32}}, 
     y::AbstractGPUVector{SVector{N, Float32}},
@@ -150,7 +180,7 @@ distribution(
     groupsize::Int = 256,
     backend = get_backend(x)
 ) where {N} = distribution(GPUCore(backend, Rect(expr, n), sampling), x, y; groupsize = groupsize)
-
+#.........................................................................................
 distribution(
     x::AbstractGPUVector{SVector{N, Float32}},
     y::AbstractGPUVector{SVector{N, Float32}},
@@ -162,16 +192,16 @@ distribution(
     backend = get_backend(x),
     metric::GPUMetric = GPUEuclidean()
 ) where {N} = distribution(x, y, Standard(ε; metric = metric), n; rate = rate, sampling = sampling, groupsize = groupsize, backend = backend)
-
+#.........................................................................................
 distribution(
     x::AbstractGPUVector{SVector{N, Float32}},
-    shape::MotifShape;
+    shape::MicrostateShape;
     rate::Float32 = 0.05f0,
     sampling::SamplingMode = SRandom(rate),
     groupsize::Int = 256,
     backend = get_backend(x),
 ) where{N} = distribution(x, x, shape; rate = rate, sampling = sampling, groupsize = groupsize, backend = backend)
-
+#.........................................................................................
 distribution(
     x::AbstractGPUVector{SVector{N, Float32}},
     expr::RecurrenceExpression,
@@ -181,7 +211,7 @@ distribution(
     groupsize::Int = 256,
     backend = get_backend(x),
 ) where{N} = distribution(x, x, expr, n; rate = rate, sampling = sampling, groupsize = groupsize, backend = backend)
-
+#.........................................................................................
 distribution(
     x::AbstractGPUVector{SVector{N, Float32}},
     ε::Float32,
@@ -192,23 +222,27 @@ distribution(
     backend = get_backend(x),
     metric::GPUMetric = GPUEuclidean()
 ) where {N} = distribution(x, x, ε, n; rate = rate, sampling = sampling, groupsize = groupsize, backend = backend, metric = metric)
-
+#.........................................................................................
 """
     distribution(core::GPUCore, [x], [y]; kwargs...)
 
-Compute an RMA distribution using `[x]` and `[y]` as input data and a GPU backend configuration specified by `core`, which must be a [`GPUCore`](@ref).  
-The inputs `[x]` and `[y]` must be vectors inheriting from `AbstractGPUVector`. This method supports only time-series analysis.
+Compute an RMA distribution for the input data `[x]` and `[y]` using a GPU backend configuration
+defined by `core`, which must be a [`GPUCore`](@ref).
+
+The inputs `[x]` and `[y]` must be vectors of type `AbstractGPUVector`. This method supports
+time-series analysis only.
 
 !!! note
-    The output is copied from GPU memory back to the CPU.
+    The resulting distribution is copied from GPU memory back to the CPU.
 
-### Input
-- `core`: A [`GPUCore`](@ref) defining the configuration of the [`MotifShape`](@ref), [`RecurrenceExpression`](@ref), and [`SamplingMode`](@ref).
-- `[x]`: Input data, provided as an `AbstractGPUVector`.
-- `[y]`: Input data, provided as an `AbstractGPUVector`.
+### Arguments
+- `core`: A [`GPUCore`](@ref) defining the [`MicrostateShape`](@ref),
+  [`RecurrenceExpression`](@ref), and [`SamplingMode`](@ref) used in the computation.
+- `[x]`: Input data provided as an `AbstractGPUVector`.
+- `[y]`: Input data provided as an `AbstractGPUVector`.
 
-### Kwargs
-- `groupsize`: Number of threads per workgroup on the GPU device.
+### Keyword Arguments
+- `groupsize`: Number of threads per GPU workgroup.
 
 ### Examples
 ```julia
@@ -230,3 +264,5 @@ function distribution(
     hist = histogram(core, x, y; groupsize = groupsize)
     return Probabilities(hist)
 end
+
+##########################################################################################

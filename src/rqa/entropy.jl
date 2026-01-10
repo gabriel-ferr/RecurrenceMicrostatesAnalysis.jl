@@ -6,20 +6,21 @@ export RecurrenceEntropy
 """
     RecurrenceEntropy <: QuantificationMeasure
 
-Defines the *Recurrence Microstates Entropy* (RME) quantification measure.
+Define the *Recurrence Microstates Entropy* (RME) quantification measure [Corso2018Entropy](@cite).
 
-The computation of RME is performed using the [`measure`](@ref) function, for which two implementations are provided.
+RME can be computed either from a distribution of recurrence microstates or directly from
+time-series data. In both cases, the computation is performed via the [`measure`](@ref)
+function.
 
-## Using a distribution
+#   Using a distribution
 ```julia
 measure(::RecurrenceEntropy, dist::Probabilities)
 ```
-### Input
-- The `QuantificationMeasure`.
-- `dist`: a distribution of recurrence microstates.
+##  Arguments
+- `dist`: A distribution of recurrence microstates.
 
-### Output
-Returns a `Float64` corresponding to the RME computed using the Shannon entropy.
+##  Returns
+A `Float64` corresponding to the RME computed using the Shannon entropy.
 
 ### Examples
 ```julia
@@ -29,19 +30,18 @@ dist = distribution(data, 0.27, 3)
 rme = measure(RecurrenceEntropy(), dist)
 ```
 
-## Using a time series
+#   Using a time series
 ```julia
 measure(::RecurrenceEntropy, [x]; kwargs...)
 ```
-### Input
-- The `QuantificationMeasure`.
-- `[x]`: time-series provided as an [`StateSpaceSet`](@ref).
+##  Arguments
+- `[x]`: Time-series data provided as an [`StateSpaceSet`](@ref).
 
-### Output
-Returns a `Float64` corresponding to the **maximum** RME based on the Shannon Entropy.
+##  Returns
+A `Float64` corresponding to the **maximum** RME computed using the Shannon entropy.
 
-### Keyword arguments
-- `n`: an `Integer` defining the microstates size. The default value is `3`.
+##  Keyword Arguments
+- `n`: Integer defining the microstate size. The default value is `3`.
 
 ### Examples
 ```julia
@@ -66,3 +66,5 @@ end
 function measure(::RecurrenceEntropy, x::StateSpaceSet; n::Integer = 3)
     return optimize(Threshold(), RecurrenceEntropy(), x, n)[2]
 end
+
+##########################################################################################

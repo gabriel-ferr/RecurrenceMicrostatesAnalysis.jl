@@ -3,6 +3,15 @@ export GPUEuclidean
 ##########################################################################################
 #   GPUMetric: Euclidean
 ##########################################################################################
+"""
+    GPUEuclidean <: GPUMetric
+
+GPU-compatible implementation of the Euclidean distance metric.
+
+```math
+d(\\vec{x}, \\vec{y}) = \\sqrt{\\sum_{i = 1}^{m} (x_i - y_i)^2}
+```
+"""
 struct GPUEuclidean <: GPUMetric end
 
 ##########################################################################################
@@ -18,3 +27,5 @@ struct GPUEuclidean <: GPUMetric end
 
     return sqrt(acc)
 end
+
+##########################################################################################

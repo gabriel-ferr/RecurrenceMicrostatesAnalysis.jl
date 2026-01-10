@@ -1,9 +1,36 @@
-
+export Transpose
 
 ##########################################################################################
 #   Transpose the microstates
 ##########################################################################################
-struct Transpose{R, C} end
+"""
+    Transpose{R, C} <: Operation
+
+Operation that transposes a microstate \$\\mathbf{M}\$.
+
+To initialize a `Transpose` operation, a rectangular microstate shape must be
+provided via a [`Rect`](@ref) structure:
+```julia
+Transpose(::Rect2{R, C, B, E})
+```
+
+#   Examples
+```julia
+Transpose(Rect(3, 3))     # 3 x 3 microstate
+```
+
+This operation is applied via the [`operate`](@ref) function:
+```julia
+operate(::Transpose, I::Int)
+```
+#   Arguments
+- `op`: A `Transpose` operation.
+- `I`: DEcima identifier of the microstate (1-based).
+
+#   Returns
+The resulting microstate decimal identifier (1-based).
+"""
+struct Transpose{R, C} <: Operation end
 
 Transpose(::Rect2{R, C, B, E}) where {R, C, B, E} = Transpose{R, C}()
 
@@ -22,3 +49,5 @@ function operate(::Transpose{R, C}, I::Int) where {R, C}
 
     return Int(res_b) + 1
 end
+
+##########################################################################################

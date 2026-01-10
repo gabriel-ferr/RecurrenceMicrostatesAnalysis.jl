@@ -5,6 +5,20 @@ export RMACore, histogram, distribution
 ##########################################################################################
 """
     RMACore
+
+Abstract supertype that defines the execution pipeline of the package.
+
+An instance of **RMACore** must be provided to the [`histogram`](@ref) function to determine how the
+histogram computation is performed.
+
+Concrete implementations of `RMACore` are [`CPUCore`](@ref) and [`GPUCore`](@ref), which target CPU
+and GPU execution, respectively. Implementing custom subtypes of `RMACore` is **strongly discouraged**,
+as doing so requires reimplementing several internal utilities for the package ecosystem to function
+correctly.
+
+#   Implementations
+- [`CPUCore`](@ref)
+- [`GPUCore`](@ref)
 """
 abstract type RMACore end
 
@@ -14,26 +28,40 @@ abstract type RMACore end
 """
     histogram(core::RMACore, [x], [y])
 
-Compute the histogram of recurrence microstates using the input data `[x]` and `[y]` for a given `core`, which must be an [`RMACore`](@ref).  
-This function implements the backend, executing the sampling process, constructing the microstates, and computing the recurrences.
+Compute the histogram of recurrence microstates for the input data `[x]` and `[y]` using the specified
+backend `core`, which must be an [`RMACore`](@ref).
 
-The output is a [`Counts`](@ref) object, where each index corresponds to the decimal representation of the associated microstate.
+This function executes the full backend pipeline: sampling the recurrence space, constructing
+microstates, and evaluating recurrences.
+
+The result is returned as a [`Counts`](@ref) object, where each index corresponds to the decimal
+representation of the associated microstate.
 """
 function histogram(core::RMACore, x, y)
     error("The RMA core of type '$(typeof(core))' is not implemented for input types: \n\t x: '$(typeof(x))'\n\t y: '$(typeof(y))')")
 end
-
+#.........................................................................................
 """
     distribution(core::RMACore, [x], [y])
 
-Compute an RMA distribution from a recurrence structure constructed using the input data `[x]` and `[y]`.  
-If `[x]` and `[y]` are identical, the result corresponds to a Recurrence Plot (RP); otherwise, it corresponds to a Cross-Recurrence Plot (CRP).
+Compute an RMA distribution from the recurrence structure constructed using the input data `[x]` and
+`[y]`.
 
-The `core` argument must be a structure inheriting from [`RMACore`](@ref) and defines how the computation is performed, including whether a CPU or GPU backend is used, the microstate shape, the recurrence expression, and the sampling mode.
+If `[x]` and `[y]` are identical, the result corresponds to a Recurrence Plot (RP); otherwise, it
+corresponds to a Cross-Recurrence Plot (CRP).
 
-The output of `distribution` is a [`Probabilities`](@ref) object, where each index corresponds to the decimal representation of the associated microstate.
+The `core` argument must be a subtype of [`RMACore`](@ref) and defines how the computation is performed,
+including the execution backend (CPU or GPU), the microstate shape, the recurrence expression, and the
+sampling mode.
+
+The result is returned as a [`Probabilities`](@ref) object, where each index corresponds to the decimal
+representation of the associated microstate.
+
+Internally, `distribution` calls [`histogram`](@ref) and converts the resulting counts into
+probabilities.
 """
 function distribution(core::RMACore, x, y)
     error("The RMA core of type '$(typeof(core))' is not implemented for input types: \n\t x: '$(typeof(x))'\n\t y: '$(typeof(y))')")
 end
 
+##########################################################################################

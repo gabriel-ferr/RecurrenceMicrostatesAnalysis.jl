@@ -6,23 +6,26 @@ export Laminarity
 """
     Laminarity <: QuantificationMeasure
 
-Defines the *Laminarity* (LAM) quantification measure.
-The computation of LAM is performed using the [`measure`](@ref) function, for which two implementations are provided.
+Define the *Laminarity* (LAM) quantification measure.
 
-## Using a distribution
+LAM can be computed either from a distribution of recurrence microstates or directly from
+time-series data. In both cases, the computation is performed via the [`measure`](@ref)
+function.
+
+#   Using a distribution
 ```julia
 measure(::Laminarity, dist::Probabilities)
 ```
 
-### Input
-- The `QuantificationMeasure`.
-- `dist`: a distribution of recurrence microstates. The distribution must be computed from square or line microstates with size 3.
+##  Arguments
+- `dist`: A distribution of recurrence microstates. The distribution must be computed from
+    **square** or **line** microstates of size 3.
 
-### Output
-Returns a `Float64` corresponding to the estimated laminarity.
+##  Returns
+A `Float64` corresponding to the estimated laminarity.
 
-### Examples
-- Using **square** microstates:
+##  Examples
+### Using square microstates
 ```julia
 using RecurrenceMicrostatesAnalysis, Distributions
 data = StateSpaceSet(rand(Uniform(0, 1), 1000))
@@ -30,7 +33,7 @@ dist = distribution(data, 0.27, 3)
 lam = measure(Laminarity(), dist)
 ```
 
-- Using **line** microstates:
+### Using line microstates:
 ```julia
 using RecurrenceMicrostatesAnalysis, Distributions
 data = StateSpaceSet(rand(Uniform(0, 1), 1000))
@@ -38,20 +41,20 @@ dist = distribution(data, Rect(Standard(0.27); rows = 1, cols = 3))
 lam = measure(Laminarity(), dist)
 ```
 
-## Using a time series
+# Using a time series
 ```julia
 measure(::Laminarity, [x]; kwargs...)
 ```
 
-### Input
-- The `QuantificationMeasure`.
-- `[x]`: time-series data provided as a [`StateSpaceSet`](@ref).
+##  Arguments
+- `[x]`: Time-series data provided as a [`StateSpaceSet`](@ref).
 
-### Output
-Returns a `Float64` corresponding to the estimated laminarity.
+##  Returns
+A `Float64` corresponding to the estimated laminarity.
 
-### Keyword arguments
-- `threshold`: threshold used to compute the RMA distribution. By default, this is the threshold that maximizes the RME.
+##  Keyword Arguments
+- `threshold`: Threshold used to compute the RMA distribution. By default, this is chosen as
+    the threshold that maximizes the recurrence microstate entropy (RME).
 
 ### Examples
 ```julia
@@ -61,7 +64,8 @@ lam = measure(Laminarity(), data)
 ```
 
 !!! note
-    When a time series is provided as input, RecurrenceMicrostatesAnalysis.jl uses `line` microstates by default.
+    When time-series data are provided directly, RecurrenceMicrostatesAnalysis.jl uses
+    line microstates by default.
 """
 struct Laminarity <: QuantificationMeasure end
 
@@ -104,3 +108,5 @@ function measure(::Laminarity, x::StateSpaceSet; threshold::Real = optimize(Thre
     dist = distribution(x, Rect(Standard(threshold); rows = 1, cols = 3))
     measure(Laminarity(), dist)
 end
+
+##########################################################################################
