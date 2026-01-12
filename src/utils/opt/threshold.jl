@@ -11,8 +11,8 @@ Threshold parameter used to classify two states as recurrent or non-recurrent.
 The `Threshold` parameter can be optimized using the [`optimize`](@ref) function in
 combination with specific [`QuantificationMeasure`](@ref)s:
 ```julia
-optimize(Threshold(), RecurrenceEntropy(), [x], n::int; kwargs...)
-optimize(Threshold(), qm::Disorder{N}, [x]; kwargs...)
+optimize(::Threshold, qm::RecurrenceEntropy, [x], n::int; kwargs...)
+optimize(::Threshold, qm::Disorder{N}, [x]; kwargs...)
 ```
 
 !!! compat

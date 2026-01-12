@@ -41,13 +41,13 @@ measure(::RecurrenceEntropy, [x]; kwargs...)
 A `Float64` corresponding to the **maximum** RME computed using the Shannon entropy.
 
 ##  Keyword Arguments
-- `n`: Integer defining the microstate size. The default value is `3`.
+- `N`: Integer defining the microstate size. The default value is `3`.
 
 ### Examples
 ```julia
 using RecurrenceMicrostatesAnalysis, Distributions
 data = StateSpaceSet(rand(Uniform(0, 1), 1000))
-rme = measure(RecurrenceEntropy(), data; n = 4)
+rme = measure(RecurrenceEntropy(), data; N = 4)
 ```
 """
 struct RecurrenceEntropy <: QuantificationMeasure end
@@ -63,8 +63,8 @@ end
 #.........................................................................................
 #       Using as input a time series
 #.........................................................................................
-function measure(::RecurrenceEntropy, x::StateSpaceSet; n::Integer = 3)
-    return optimize(Threshold(), RecurrenceEntropy(), x, n)[2]
+function measure(::RecurrenceEntropy, x::StateSpaceSet; N::Integer = 3)
+    return optimize(Threshold(), RecurrenceEntropy(), x, N)[2]
 end
 
 ##########################################################################################

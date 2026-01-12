@@ -12,16 +12,16 @@ Sampling mode that randomly selects microstate positions \$(i, j)\$ within the
 #   Constructors
 ```julia
 SRandom(num_samples::Int)
-SRandom(rate::Union{Float32, Float64})
+SRandom(ratio::Union{Float32, Float64})
 ```
 
 The sampling mode can be initialized either by specifying the exact number of microstates
-to sample or by providing a fraction of the total number of possible microstates.
+to sample or by providing a ratio of the total number of possible microstates.
 
 #   Examples
 ```julia
 s = SRandom(1000)   # Specify the exact number of sampled microstates
-s = SRandom(0.05)   # Specify a fraction of the total possible microstates
+s = SRandom(0.05)   # Specify a ratio of the total possible microstates
 ```
 """
 struct SRandom{F <: Real} <: SamplingMode
@@ -33,11 +33,11 @@ function SRandom(num_samples::Int)
     return SRandom{Int}(num_samples)
 end 
 #.........................................................................................
-function SRandom(rate::Union{Float32, Float64})
-    @assert rate > 0 "The sampling rate must be greater than 0."
-    @assert rate ≤ 1.0 "The sampling rate must be smaller than 1."
+function SRandom(ratio::Union{Float32, Float64})
+    @assert ratio > 0 "The sampling ratio must be greater than 0."
+    @assert ratio ≤ 1.0 "The sampling ratio must be smaller than 1."
 
-    return SRandom{typeof(rate)}(rate)
+    return SRandom{typeof(ratio)}(ratio)
 end
 
 ##########################################################################################

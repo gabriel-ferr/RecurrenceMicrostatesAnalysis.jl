@@ -31,8 +31,8 @@ N = 2
 dist = distribution(ssset, ε, N)
 ```
 
-As another example, we use [DynamicalSystems.jl](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/dynamicalsystems/stable/).
-As a second example, we use DynamicalSystems.jl to generate data from the Hénon map, following the example presented in its documentation:
+As another example, we use [DynamicalSystems.jl](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/dynamicalsystems/stable/)
+to generate data from the Hénon map, following the example presented in its documentation:
 ```@example quick_example
 using DynamicalSystems
 
@@ -145,7 +145,6 @@ dist = distribution(ssset, shape)
 RMA distributions can also be computed from Cross-Recurrence Plots (CRPs) by providing two time series:
 ```julia
 distribution([x], [y], expr::RecurrenceExpression, n::Int; kwargs...)
-distribution([x], [y], expr::RecurrenceExpression, n::Int; kwargs...)
 distribution([x], [y], shape::MicrostateShape; kwargs...)
 ```
 
@@ -183,7 +182,7 @@ infeasible. RMA distributions provide a compact alternative by sampling microsta
 from the data.
 
 **Examples:**
-- Full $2 \ times d$ microstates:
+- Full $2 \times d$ microstates:
 ```@example quick_example
 distribution(spatialdata, Rect(Standard(0.27), (2, 2, 2, 2)))
 ```

@@ -15,7 +15,7 @@ where \$\\Theta(\\cdot)\$ denotes the Heaviside function and \$(\\varepsilon_{mi
 thresholds for two states to be considered recurrent.
 
 The `Corridor` struct stores the corridor thresholds `ε_min` and `ε_max`, as well as the
-distance `metric` used to evaluate \$|\vec{x} - \vec{y}|\$. The metric must be defined using
+distance `metric` used to evaluate \$|\\vec{x} - \\vec{y}|\$. The metric must be defined using
 the [Distances.jl](https://github.com/JuliaStats/Distances.jl) package.
 
 #   Constructor

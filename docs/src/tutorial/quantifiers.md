@@ -24,11 +24,11 @@ point of the RMA framework [Corso2018Entropy](@cite). It is defined as the Shann
 the RMA distribution:
 
 ```math
-RME = -\sum_{i = 1}^{2^\sigma} p_i^{(n)} \ln p_i^{(n)},
+RME = -\sum_{i = 1}^{2^\sigma} p_i^{(N)} \ln p_i^{(N)},
 ```
 
 where $n$ is the microstate size, $\sigma$ is the number of recurrence elements constrained
-within the microstate (e.g. $\sigma = n^2$ for square microstates), and $p_i^{(n)}$ denotes
+within the microstate (e.g. $\sigma = n^2$ for square microstates), and $p_i^{(N)}$ denotes
 the probability of the microstate with decimal representation $i$.
 
 In **RecurrenceMicrostatesAnalysis.jl**, the RME is implemented by the [`RecurrenceEntropy`](@ref) struct.
@@ -71,14 +71,14 @@ where $K$ is the length of the time series.
 When estimated using RMA, RR is defined as the expected recurrence rate over the microstate
 distribution:
 ```math
-RR = \sum_{i = 1}^{2^\sigma} p_i^{(n)} RR_i^{(n)},
+RR = \sum_{i = 1}^{2^\sigma} p_i^{(N)} RR_i^{(N)},
 ```
-where $RR_i^{(n)}$ denotes the recurrence rate of the $i$-th microstate. For square
+where $RR_i^{(N)}$ denotes the recurrence rate of the $i$-th microstate. For square
 microstates, this quantity is given by
 ```math
-RR_i^{(n)} = \frac{1}{\sigma} \sum_{m,n=1}^n M_{m,n}^{i, (n)},
+RR_i^{(N)} = \frac{1}{\sigma} \sum_{j,k=1}^N M_{j,k}^{i, (N)},
 ```
-with $\mathbf{M}_i^{(n)}$ denoting the microstate structure corresponding to index $i$.
+with $\mathbf{M}^{i, (N)}$ denoting the microstate structure corresponding to index $i$.
 
 In **RecurrenceMicrostatesAnalysis.jl**, RR is implemented by [`RecurrenceRate`](@ref) struct.
 ```@docs
@@ -89,20 +89,20 @@ RecurrenceRate
 In standard RQA, Determinism (DET) measures the fraction of recurrence points forming
 diagonal line structures [Webber2015Recurrence](@cite):
 ```math
-DET = \frac{\sum_{l=d_{min}}^K l~H_D(l)}{\sum_{i,j=1}^N R_{i,j}},
+DET = \frac{\sum_{l=d_{min}}^K l~H_D(l)}{\sum_{i,j=1}^K R_{i,j}},
 ```
 where $H_D(l)$ is the histogram of diagonal line lengths,
 ```math
-H_D(l)=\sum_{i,j]1}^N(1-R_{i-1,j-1})(1-R_{i+l,j+l})\prod_{k=0}^{l-1}R_{i+k,j+k}.
+H_D(l)=\sum_{i,j]1}^K(1-R_{i-1,j-1})(1-R_{i+l,j+l})\prod_{k=0}^{l-1}R_{i+k,j+k}.
 ```
 
 The estimation of DET using RMA is based on the work *"Density-Based Recurrence Measures from Microstates"* [daCruz2025RQAMeasures](@cite). In that work, the DET expression is rewritten as
 ```math
-DET = 1 - \frac{1}{N^2~RR}\sum_{l=1}^{l_{min}-1} l~H_D(l),
+DET = 1 - \frac{1}{K^2~RR}\sum_{l=1}^{l_{min}-1} l~H_D(l),
 ```
 and the diagonal histogram $H_D(l)$ is related to the RMA distribution through correlations between microstate structures:
 ```math
-\frac{H_D(l)}{(N-l-1)^2}=\vec d^{(l)}\cdot\mathcal{R}^{(l+2)}\vec p^{(l+2)}.
+\frac{H_D(l)}{(K-l-1)^2}=\vec d^{(l)}\cdot\mathcal{R}^{(l+2)}\vec p^{(l+2)}.
 ```
 
 For the commonly used case $l_{min} = 2$ (currently the only case implemented in the package), this leads to the approximation
@@ -119,12 +119,12 @@ These correspond to microstates of the form
 0 & \xi & \xi \\
 \end{pmatrix},
 ```
-where $\xi$ denotes an unconstrained entry. There are $64$ such microstates among the $512$ possible square microstates of size $n = 3$. 
+where $\xi$ denotes an unconstrained entry. There are $64$ such microstates among the $512$ possible square microstates of size $N = 3$. 
 Defining the class $C_D$ as the set of microstates with this structure, DET can be estimated as:
 ```math
 DET\approx 1 - \frac{\sum_{i\in C_D} p_i^{(3)}}{RR},
 ```
-where $p_i^{(3)}$ is the probability of the $i$-th microstate in an RMA distribution of square microstates with size $n = 3$.
+where $p_i^{(3)}$ is the probability of the $i$-th microstate in an RMA distribution of square microstates with size $N = 3$.
 
 A futher simplification can be obtained by defining [`Diagonal`](@ref)-shaped microstates [Ferreira2025RMALib](@cite). 
 In the structure above, the unconstrained entries $\xi$ may represent either recurrences or non-recurrences, leading to the need for all $64$ combinations.
@@ -145,11 +145,11 @@ Determinism
 Laminarity (LAM) is another classical RQA quantifier that measures the proportion of recurrence points forming vertical (line) structures in a recurrence plot. 
 It is defined as
 ```math
-LAM = \frac{\sum_{l=v_{min}}^K l~H_V(l)}{\sum_{i,j=1}^N R_{i,j}},
+LAM = \frac{\sum_{l=v_{min}}^K l~H_V(l)}{\sum_{i,j=1}^K R_{i,j}},
 ```
 where
 ```math
-H_V(l)=\sum_{i,j]1}^N(1-R_{i,j-1})(1-R_{i,j+l})\prod_{k=0}^{l-1}R_{i,j+k}.
+H_V(l)=\sum_{i,j]1}^K(1-R_{i,j-1})(1-R_{i,j+l})\prod_{k=0}^{l-1}R_{i,j+k}.
 ```
 
 The estimation of LAM using RMA is also based on the work *"Density-Based Recurrence Measures from Microstates"* [daCruz2025RQAMeasures](@cite) and follows the same logical used for determinsm.
@@ -181,7 +181,7 @@ Laminarity
 
 ##  Disorder
 The disorder quantifier is implemented based on the work *“Quantifying Disorder in Data”* [Flauzino2025Disorder](@cite). 
-It is a novel and powerful tool for data analysis, allowing the differentiation between stochastic and deterministic time series, as well as between different types of stochastic dynamics, such as white, pink, and red Gaussian noise.
+It is a novel and powerful tool for data analysis, allowing the distinction between stochastic and deterministic time series, as well as between different types of stochastic dynamics, such as white, pink, and red Gaussian noise.
 
 Disorder is implemented using square recurrence microstates, which can be permuted by rows and columns and transposed (see [Permutations and Transposition](@ref)). 
 This procedure generates a set of equivalent microstates given by
@@ -190,16 +190,16 @@ This procedure generates a set of equivalent microstates given by
 ```
 This defines an equivalence class of microstates denoted by $\mathcal{M}_a$.
 
-The probability of observing a given microstate $\mathbf M_i^{(n)}$ in the recurrence plot, denoted by $p_i^{(n)}$, is computed using **RecurrenceMicrostatesAnalysis.jl**.
+The probability of observing a given microstate $\mathbf Mi^{i,(N)}$ in the recurrence plot, denoted by $p_i^{(N)}$, is computed using **RecurrenceMicrostatesAnalysis.jl**.
 To compute disorder, the probabilities of microstates belonging to the same class must be normalized.
-Thus, for $\mathbf M_i^{(n)} \in \mathcal{M}_a$, the normalized probability within the class is defined as
+Thus, for $\mathbf M^{i, (N)} \in \mathcal{M}_a$, the normalized probability within the class is defined as
 ```math
-p_i^{(a, n)} = \frac{p_i^{(n)}}{\sum_{\mathbf{M}_j^{(n)} \in \mathcal{M}_a}~p_j^{(n)}}.
+p_i^{(a, N)} = \frac{p_i^{(N)}}{\sum_{\mathbf{M}_j^{(N)} \in \mathcal{M}_a}~p_j^{(N)}}.
 ```
 
 The information entropy associated with the probability distribution of microstates in the class $\mathcal{M}_a$ is then defined as
 ```math
-\xi_a(\varepsilon) \stackrel{\mathrm{def}}{=} -\sum_{\mathbf{M}_i^{(n)} \in \mathcal{M}_a} p_i^{(a, n)} \ln p_i^{(a, n)}.
+\xi_a(\varepsilon) \stackrel{\mathrm{def}}{=} -\sum_{\mathbf{M}_i^{(N)} \in \mathcal{M}_a} p_i^{(a, N)} \ln p_i^{(a, N)}.
 ```
 This entropy is normalized by $\ln m_a$, where $m_a$ is the number of microstates in the class $\mathcal{M}_a$.
 Using **RecurrenceMicrostatesAnalysis.jl**, the normalized quantity $\xi_a(\varepsilon) / \ln m_a$ can be computed as

@@ -42,7 +42,7 @@ measure(::RecurrenceRate, [x]; kwargs...)
 A `Float64` corresponding to the estimated recurrence rate.
 
 ##  Keyword Arguments
-- `n`: Integer defining the microstate size. The default value is `3`.
+- `N`: Integer defining the microstate size. The default value is `3`.
 - `threshold`: Threshold used to compute the RMA distribution. By default, this is chosen as
     the threshold that maximizes the recurrence microstate entropy (RME).
 
@@ -50,7 +50,7 @@ A `Float64` corresponding to the estimated recurrence rate.
 ```julia
 using RecurrenceMicrostatesAnalysis, Distributions
 data = StateSpaceSet(rand(Uniform(0, 1), 1000))
-rme = measure(RecurrenceRate(), data; n = 4)
+rme = measure(RecurrenceRate(), data; N = 4)
 ```
 """
 struct RecurrenceRate <: QuantificationMeasure end

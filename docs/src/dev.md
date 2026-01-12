@@ -263,7 +263,7 @@ SamplingSpace(
 And done, the shape can be used 😃. Remember to document it!
 
 !!! warning
-    Remember, to use it the backend need to have access to the util functions, them it is important to do the implementation inside the package module.
+    The backend needs to have access to the util functions, them it is important to do the implementation inside the package module.
 
 ## Adding a New Quantifier
 ### Steps

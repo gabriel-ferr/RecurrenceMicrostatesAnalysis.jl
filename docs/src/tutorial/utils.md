@@ -53,7 +53,7 @@ g & h & i
     used in the computation of [`Disorder`](@ref).
 
 #### Permutations of Rows
-Let $\sigma \in S_N$ be a permutation, and let $\mathcal{L}_\sigma$ denote the operator that
+Let $\sigma \in S_N$ be a permutation, where $S_N$ is the symmetric group, and let $\mathcal{L}_\sigma$ denote the operator that
 permutes the rows of a microstate $\mathbf{M}$ according to $\sigma$.
 
 For example, for $\sigma = 132$, the third and second rows are exchanged, while the first row
@@ -78,7 +78,7 @@ Sn = collect(permutations(1:n))
 ```
 
 The permutation is applied using [`PermuteRows`](@ref)  operation. For example, consider
-the microstate with decimal index $I = 237$:
+the square $3\times 3$ microstate with decimal index $I = 237$:
 ```math
 \mathbf{M} = \begin{pmatrix}
 0 & 0 & 1 \\

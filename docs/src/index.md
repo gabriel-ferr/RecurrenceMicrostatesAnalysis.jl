@@ -13,7 +13,7 @@ The documentation of **RecurrenceMicrostatesAnalysis.jl** is designed to explain
 
 This welcome section begins with an introduction to the [Input data for RecurrenceMicrostatesAnalysis.jl](@ref). Understanding the data types used by the package and their intended purposes is essential before proceeding with the rest of the documentation. We also describe the [Output data from RecurrenceMicrostatesAnalysis.jl](@ref), explaining the type of data returned when computing recurrence microstate distributions.
 
-The **Tutorial** section explains how to use the package in practice. It starts with a brief introduction to RMA and demonstrates how to compute [Distributions](@ref) using **RecurrenceMicrostatesAnalysis.jl**. Next, we show how to estimate RQA [Quantifiers](@ref) using RMA and discuss several quantifiers defined specifically for RMA. This material constitutes the *basic level* of the documentation and is sufficient to use the package effectively.
+The **Tutorial** section explains how to use the package in practice. It starts with a brief introduction to RMA and demonstrates how to compute [Distributions](@ref) using **RecurrenceMicrostatesAnalysis.jl**. Next, we show how to estimate RQA [Quantifiers](@ref) using RMA and discuss quantifiers defined specifically for RMA. This material constitutes the *basic level* of the documentation and is sufficient to learn how to effectively use this package.
 
 For users interested in more advanced topics, the [Recurrence Functions](@ref) section discusses different ways of computing recurrence between two states, while the [Shapes and Sampling](@ref) section explains motif shapes used to extract specific information from a Recurrence Plot.
 
