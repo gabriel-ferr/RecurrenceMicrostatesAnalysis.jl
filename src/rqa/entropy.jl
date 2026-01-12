@@ -58,7 +58,7 @@ struct RecurrenceEntropy <: QuantificationMeasure end
 #       Using as input a RMA distribution.
 #.........................................................................................
 function measure(::RecurrenceEntropy, dist::Probabilities)
-    return entropy(dist)
+    return entropy(Shannon(; base = MathConstants.e), dist)
 end
 #.........................................................................................
 #       Using as input a time series

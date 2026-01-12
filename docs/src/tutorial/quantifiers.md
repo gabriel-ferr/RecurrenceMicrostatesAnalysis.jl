@@ -190,7 +190,7 @@ This procedure generates a set of equivalent microstates given by
 ```
 This defines an equivalence class of microstates denoted by $\mathcal{M}_a$.
 
-The probability of observing a given microstate $\mathbf Mi^{i,(N)}$ in the recurrence plot, denoted by $p_i^{(N)}$, is computed using **RecurrenceMicrostatesAnalysis.jl**.
+The probability of observing a given microstate $\mathbf M^{i,(N)}$ in the recurrence plot, denoted by $p_i^{(N)}$, is computed using **RecurrenceMicrostatesAnalysis.jl**.
 To compute disorder, the probabilities of microstates belonging to the same class must be normalized.
 Thus, for $\mathbf M^{i, (N)} \in \mathcal{M}_a$, the normalized probability within the class is defined as
 ```math
