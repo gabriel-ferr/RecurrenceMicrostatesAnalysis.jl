@@ -132,7 +132,7 @@ function histogram(
     res =  hist |> Vector
     out = eachindex(res)
 
-    return Counts(res, out)
+    return Counts(Int64.(res), out)
 end
 
 ##########################################################################################
