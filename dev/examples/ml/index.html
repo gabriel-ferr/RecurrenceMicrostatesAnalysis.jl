@@ -22,16 +22,16 @@ test_timeseries = Vector{StateSpaceSet}(undef, length(ρ_cls) * num_samples_to_t
 
 train_labels = Vector{Float64}(undef, length(ρ_cls) * num_samples_to_train)
 test_labels = Vector{Float64}(undef, length(ρ_cls) * num_samples_to_test)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">250-element Vector{Float64}:
- 0.0
- 0.0
- 0.0
- 0.0
- 0.0
- 0.0
- 0.0
- 0.0
- 0.0
- 0.0
+ 9.083672063161193e223
+ 5.039648928633225e223
+ 1.414183324551467e195
+ 1.9533711723221764e233
+ 5.981469832438729e-154
+ 6.381803132746152e247
+ 2.569880741853209e161
+ 2.440162812269719e-154
+ 1.1146009658393448e171
+ 8.882096142853536e252
  ⋮
  0.0
  0.0
@@ -96,26 +96,26 @@ test_timeseries</code></pre><pre class="documenter-example-output"><code class="
  3-dimensional StateSpaceSet{Float64} with 2001 points</code></pre><h3 id="Preparing-the-input-features"><a class="docs-heading-anchor" href="#Preparing-the-input-features">Preparing the input features</a><a id="Preparing-the-input-features-1"></a><a class="docs-heading-anchor-permalink" href="#Preparing-the-input-features" title="Permalink"></a></h3><p>For each time series, we compute the RMA distribution and store it as a feature vector.</p><pre><code class="language-julia hljs">microstate_n = 3
 train_dataset = Matrix{Float64}(undef, 2^(microstate_n * microstate_n) + 2, length(train_labels))
 test_dataset = Matrix{Float64}(undef, 2^(microstate_n * microstate_n) + 2, length(test_labels))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">514×250 Matrix{Float64}:
- 0.0        0.0  0.0  0.0  0.0  0.0  …  0.0  0.0  0.0  0.0  0.0  0.0  0.0
- 5.85e-320  0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
- 0.0        0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
- 0.0        0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
- 0.0        0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
- 0.0        0.0  0.0  0.0  0.0  0.0  …  0.0  0.0  0.0  0.0  0.0  0.0  0.0
- 0.0        0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
- 0.0        0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
- 0.0        0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
- 0.0        0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
- ⋮                              ⋮    ⋱            ⋮                   
- 0.0        0.0  0.0  0.0  0.0  0.0  …  0.0  0.0  0.0  0.0  0.0  0.0  0.0
- 0.0        0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
- 0.0        0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
- 0.0        0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
- 0.0        0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
- 0.0        0.0  0.0  0.0  0.0  0.0  …  0.0  0.0  0.0  0.0  0.0  0.0  0.0
- 0.0        0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
- 0.0        0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
- 0.0        0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0</code></pre><p>The following function computes the RMA features:</p><pre><code class="language-julia hljs">function get_probs!(dataset, timeseries, n)
+ 0.0         0.0  0.0  0.0  0.0  0.0  …  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 5.787e-320  0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 0.0         0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 0.0         0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 0.0         0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 0.0         0.0  0.0  0.0  0.0  0.0  …  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 0.0         0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 0.0         0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 0.0         0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 0.0         0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ ⋮                               ⋮    ⋱            ⋮                   
+ 0.0         0.0  0.0  0.0  0.0  0.0  …  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 0.0         0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 0.0         0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 0.0         0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 0.0         0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 0.0         0.0  0.0  0.0  0.0  0.0  …  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 0.0         0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 0.0         0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 0.0         0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0  0.0</code></pre><p>The following function computes the RMA features:</p><pre><code class="language-julia hljs">function get_probs!(dataset, timeseries, n)
     for i ∈ eachindex(timeseries)
         th, s = optimize(Threshold(), RecurrenceEntropy(), timeseries[i], n)
         dist = distribution(timeseries[i], th, n)
@@ -125,47 +125,47 @@ test_dataset = Matrix{Float64}(undef, 2^(microstate_n * microstate_n) + 2, lengt
     end
 end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">get_probs! (generic function with 1 method)</code></pre><pre><code class="language-julia hljs">get_probs!(train_dataset, train_timeseries, microstate_n)
 train_dataset</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">514×1000 Matrix{Float64}:
- 16.9455       16.8943       16.7713       …  18.3058       17.7695
-  5.17641       5.1683        5.17442          5.29423       5.2596
-  0.000685682   0.000775772   0.00133633       0.00163663    0.00457956
-  0.0165565     0.0161911     0.0166265        0.0128478     0.0165915
-  0.00165164    0.00175675    0.00194193       0.00309808    0.00504502
-  0.0123673     0.0116416     0.0121821    …   0.0115315     0.0125124
-  0.00738735    0.00666163    0.00769265       0.00578075    0.00928924
-  0.00599096    0.00642639    0.0064314        0.00731728    0.00787784
-  0.00634631    0.00621118    0.00649146       0.00659656    0.00704701
-  0.00226726    0.00209709    0.00224223       0.00101601    0.00150149
+ 17.2238       16.8232       16.8039       …  17.9449       18.4381
+  5.17551       5.17734       5.17715          5.28004       5.26772
+  0.000385383   0.000960956   0.00165164       0.00189188    0.00127627
+  0.0153202     0.0166916     0.017132         0.0151751     0.0122822
+  0.00115115    0.00198197    0.00235735       0.00324323    0.00314313
+  0.0116116     0.0121871     0.0123373    …   0.012077      0.011021
+  0.00616113    0.00770266    0.00801297       0.00698195    0.00569066
+  0.00588085    0.0066316     0.00641138       0.00785782    0.00830326
+  0.00590588    0.0061311     0.00670167       0.00702199    0.00619617
+  0.00193192    0.00229729    0.0027127        0.00113613    0.00116616
   ⋮                                        ⋱                
-  0.00295294    0.00310309    0.00316315   …   0.00270269    0.0028178
-  0.00918414    0.00943439    0.00900896       0.0102052     0.00937433
-  0.0102001     0.0103153     0.00979475       0.00607605    0.00480979
-  0.000185184   0.000145144   0.000130129      0.000270269   0.000200199
-  0.00722719    0.00802799    0.00769265       0.00490989    0.00445443
-  0.000745742   0.000770767   0.000580578  …   0.000480478   0.000500498
-  0.00320319    0.00297296    0.00306305       0.00272771    0.00274273
-  0.00210209    0.00175174    0.00200199       0.00173673    0.00197196
-  0.0274323     0.0272371     0.0263512        0.0398346     0.0525473</code></pre><pre><code class="language-julia hljs">get_probs!(test_dataset, test_timeseries, microstate_n)
+  0.00328827    0.00332331    0.00360859   …   0.00248748    0.00323322
+  0.0102602     0.00891387    0.00923419       0.00916412    0.0112812
+  0.011051      0.00962958    0.00985981       0.00546544    0.00605102
+  0.000225224   0.000130129   7.00697e-5       0.000260259   0.000255254
+  0.00846843    0.00779776    0.00757754       0.00426925    0.0057307
+  0.000830827   0.000650647   0.000700697  …   0.000540538   0.000615613
+  0.00336835    0.00348347    0.00370869       0.00260759    0.00298797
+  0.00192692    0.00187186    0.00212211       0.00164664    0.00209709
+  0.0260059     0.0294243     0.0372571        0.0334933     0.0503951</code></pre><pre><code class="language-julia hljs">get_probs!(test_dataset, test_timeseries, microstate_n)
 test_dataset</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">514×250 Matrix{Float64}:
- 16.8645       16.8776       17.201        …  17.6503       17.9719
-  5.16711       5.17606       5.16837          5.2741        5.24947
-  0.000945941   0.00141641    0.00171671       0.00312811    0.00397395
-  0.0164614     0.0164664     0.0151351        0.0171621     0.0164864
-  0.00178177    0.00177677    0.00125625       0.00491489    0.00479978
-  0.0119419     0.012107      0.0116866    …   0.013093      0.0114514
-  0.00696693    0.00748245    0.00558055       0.00908404    0.00867363
-  0.00676673    0.00647144    0.00608606       0.00781778    0.00824821
-  0.00591088    0.00662659    0.00593591       0.00726223    0.00768765
-  0.00207707    0.00229729    0.00202702       0.00127627    0.00157156
+ 16.6018       16.5241       16.9328       …  17.922        18.2344
+  5.16733       5.15963       5.17614          5.28553       5.28444
+  0.00272271    0.0028178     0.00116616       0.00195194    0.00117117
+  0.0188838     0.019059      0.0165365        0.0154604     0.0130029
+  0.00306305    0.00302301    0.00197196       0.00360859    0.00329828
+  0.0129329     0.0126526     0.012077     …   0.0122972     0.0115064
+  0.0102902     0.00973969    0.00732729       0.00750246    0.00617114
+  0.00659156    0.00627624    0.00575573       0.00718715    0.00751247
+  0.00766262    0.00717714    0.00662659       0.00704701    0.00657654
+  0.00258757    0.0024074     0.00231731       0.00122622    0.00102102
   ⋮                                        ⋱                
-  0.0025175     0.00346345    0.00308307   …   0.00234734    0.00298297
-  0.00918914    0.00917913    0.0104704        0.00856853    0.0107057
-  0.00989485    0.010065      0.0105455        0.00449447    0.00510007
-  0.000105105   0.000115115   7.50747e-5       0.000190189   0.000190189
-  0.00786783    0.00776773    0.00816312       0.00405904    0.00518015
-  0.000595593   0.000755752   0.000605603  …   0.000335334   0.000525523
-  0.00239238    0.00333332    0.00283782       0.0024124     0.00312811
-  0.00146145    0.0022122     0.0017067        0.0014114     0.00200199
-  0.0229378     0.030105      0.0258307        0.0364763     0.0544592</code></pre><h3 id="Defining-the-neural-network-model"><a class="docs-heading-anchor" href="#Defining-the-neural-network-model">Defining the neural network model</a><a id="Defining-the-neural-network-model-1"></a><a class="docs-heading-anchor-permalink" href="#Defining-the-neural-network-model" title="Permalink"></a></h3><pre><code class="language-julia hljs">model = Chain(
+  0.00388386    0.00334833    0.00346345   …   0.00258757    0.00284783
+  0.00918414    0.00931427    0.00971967       0.00895391    0.00920416
+  0.00903399    0.00895391    0.00995491       0.00515012    0.00586584
+  0.000135134   6.50647e-5    0.000140139      0.000250249   0.000290289
+  0.0076426     0.00709206    0.00780276       0.00440438    0.00477976
+  0.000705702   0.000625622   0.000705702  …   0.000490488   0.000665662
+  0.00365364    0.00324823    0.00333332       0.0028178     0.00265264
+  0.00214714    0.00184183    0.00200199       0.00175174    0.00173673
+  0.0399798     0.0376024     0.0322571        0.0378727     0.0474122</code></pre><h3 id="Defining-the-neural-network-model"><a class="docs-heading-anchor" href="#Defining-the-neural-network-model">Defining the neural network model</a><a id="Defining-the-neural-network-model-1"></a><a class="docs-heading-anchor-permalink" href="#Defining-the-neural-network-model" title="Permalink"></a></h3><pre><code class="language-julia hljs">model = Chain(
     Dense(2^(microstate_n * microstate_n) + 2 =&gt; 512, identity),
     Dense(512 =&gt; 256, selu),
     Dense(256 =&gt; 64, selu),
@@ -214,4 +214,4 @@ function get_quatifiers(predict, trusty, classes)
 
     return tr(conf) / (sum(conf) + eps())
 end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">get_quatifiers (generic function with 1 method)</code></pre><pre><code class="language-julia hljs">accuracy = get_quatifiers(model(test_dataset), test_labels, ρ_cls)
-accuracy * 100</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">100.0</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../tutorial/utils/">« Utils</a><a class="docs-footer-nextpage" href="../../dev/">Developers »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.16.1 on <span class="colophon-date" title="Monday 12 January 2026 20:10">Monday 12 January 2026</span>. Using Julia version 1.12.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+accuracy * 100</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">100.0</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../tutorial/utils/">« Utils</a><a class="docs-footer-nextpage" href="../../dev/">Developers »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.16.1 on <span class="colophon-date" title="Tuesday 13 January 2026 21:25">Tuesday 13 January 2026</span>. Using Julia version 1.12.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
