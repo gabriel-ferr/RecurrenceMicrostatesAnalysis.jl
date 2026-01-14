@@ -1,27 +1,70 @@
+export RecurrenceEntropy
 
+##########################################################################################
+#   Quantification Measure: RecurrenceRate
+##########################################################################################
 """
-    rentropy([probs]; [ignore_motifs])
+    RecurrenceEntropy <: QuantificationMeasure
 
-Compute the recurrence entropy, as proposed by [Corso2018](@cite).
+Define the *Recurrence Microstates Entropy* (RME) quantification measure [Corso2018Entropy](@cite).
 
-Input:
-* `[probs]`: a `Vector{Float64}` returned by the function `distribution(...)`.
-* `[ignore_motifs]` **(kwarg)**: list of motifs to ignore.
+RME can be computed either from a distribution of recurrence microstates or directly from
+time-series data. In both cases, the computation is performed via the [`measure`](@ref)
+function.
 
-Output: return the recurrence entropy as a `Float64`.
+#   Using a distribution
+```julia
+measure(::RecurrenceEntropy, dist::Probabilities)
+```
+##  Arguments
+- `dist`: A distribution of recurrence microstates.
+
+##  Returns
+A `Float64` corresponding to the RME computed using the Shannon entropy.
+
+### Examples
+```julia
+using RecurrenceMicrostatesAnalysis, Distributions
+data = StateSpaceSet(rand(Uniform(0, 1), 1000))
+dist = distribution(data, 0.27, 3)
+rme = measure(RecurrenceEntropy(), dist)
+```
+
+#   Using a time series
+```julia
+measure(::RecurrenceEntropy, [x]; kwargs...)
+```
+##  Arguments
+- `[x]`: Time-series data provided as an [`StateSpaceSet`](@ref).
+
+##  Returns
+A `Float64` corresponding to the **maximum** RME computed using the Shannon entropy.
+
+##  Keyword Arguments
+- `N`: Integer defining the microstate size. The default value is `3`.
+
+### Examples
+```julia
+using RecurrenceMicrostatesAnalysis, Distributions
+data = StateSpaceSet(rand(Uniform(0, 1), 1000))
+rme = measure(RecurrenceEntropy(), data; N = 4)
+```
 """
-function rentropy(probs::Vector{Float64}; ignore_motifs::Vector{Int} = [-1])
-    s::Float64 = 0.0
+struct RecurrenceEntropy <: QuantificationMeasure end
 
-    for i in eachindex(probs)
-        if (any(x -> x == i, ignore_motifs))
-            continue
-        end
-
-        if (probs[i] > 0)
-            s += (-1) * probs[i] * log(probs[i])
-        end
-    end
-
-    return s
+##########################################################################################
+#   Implementation: measure
+##########################################################################################
+#       Using as input a RMA distribution.
+#.........................................................................................
+function measure(::RecurrenceEntropy, dist::Probabilities)
+    return entropy(Shannon(; base = MathConstants.e), dist)
 end
+#.........................................................................................
+#       Using as input a time series
+#.........................................................................................
+function measure(::RecurrenceEntropy, x::StateSpaceSet; N::Integer = 3)
+    return optimize(Threshold(), RecurrenceEntropy(), x, N)[2]
+end
+
+##########################################################################################

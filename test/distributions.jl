@@ -1,96 +1,173 @@
-import RecurrenceMicrostatesAnalysis as RMA
+using RecurrenceMicrostatesAnalysis
+
 using Test
 using Distances
-using Distributions
-using DifferentialEquations
+using ComplexityMeasures
 
-##
-##      Lorenz system
-function lorenz!(du, u, p, dt)
-    x, y, z = u
-    σ, ρ, β = p
+const TOLERANCE_DIST = 1e-5
+
+@testset "distributions: StateSpaceSet + CPUCore" begin
+    
+    x = StateSpaceSet(rand(1000))
+    y = StateSpaceSet(rand(2000))
+
+    @test_nothing distribution(x, y, Rect(Standard(0.27), 2))
+    @test_nothing distribution(x, y, Standard(0.27), 2)
+    @test_nothing distribution(x, y, 0.27, 2)
+    @test_nothing distribution(CPUCore(Rect(Standard(0.27), 2), SRandom(0.05)), x)
+    @test_nothing distribution(x, Rect(Standard(0.27), 2))
+    @test_nothing distribution(x, Standard(0.27), 2)
+    @test_nothing distribution(x, 0.27, 2)
+    
+    dist_1 = distribution(x, 0.27, 2)
+    dist_2 = distribution(x, 0.27, 2)
+
+    @test dist_1 isa Probabilities
+    @test dist_2 isa Probabilities
+
+    @test begin
         
-    du[1] = σ * (y - x)
-    du[2] = x * (ρ - z) - y
-    du[3] = x * y - β * z
-end
+        outcomes_1 = outcomes(dist_1)
+        outcomes_2 = outcomes(dist_2)
 
-prob = ODEProblem(lorenz!, rand(Uniform(0, 1), 3), (0, 5000), [10.0, 28.0, 8.0/3.0])
-sol = solve(prob, dt = 0.00001)
+        @test length(outcomes_1) == length(outcomes_2)
 
-##
-##      Data
-uniform = rand(Uniform(0, 1), 5000)
-
-##
-##      Motif size
-motif_n = [2, 3, 4]
-
-## ----------------------------------------------------------------------------------------
-##          Square motifs
-@testset "square motif" begin
-    for n in motif_n
-        th, s = find_parameters(uniform, n)
-
-        ##  Sampling mode: random
-        dist_1 = distribution(uniform, th, n; num_samples = 0.5, sampling_mode = :random)
-        dist_2 = distribution(uniform, th, n; num_samples = 0.5, sampling_mode = :random)
-        @test length(dist_1) == length(dist_2) == 2^(n * n)
-        @test sqrt(js_divergence(dist_1, dist_2)) < 0.1
-
-        ##  Sampling mode: full
-        dist_1 = distribution(uniform, th, n; sampling_mode = :full)
-        dist_2 = distribution(uniform, th, n; sampling_mode = :full)
-        @test length(dist_1) == length(dist_2) == 2^(n * n)
-        @test dist_1 == dist_2
-
-        ##  Sampling mode: columnwise
-        dist_1 = distribution(uniform, th, n; num_samples = 0.95, sampling_mode = :columnwise)
-        dist_2 = distribution(uniform, th, n; num_samples = 0.95, sampling_mode = :columnwise)
-        sz = size(dist_1)
-        @test sz == size(dist_2)
-        for i in 1:sz[2]
-            @test sqrt(js_divergence(dist_1[:, i], dist_2[:, i])) < 0.25
+        for i in eachindex(outcomes_1)
+            if abs(dist_1[i] - dist_2[i]) ≥ TOLERANCE_DIST
+                return false
+            end
         end
 
-        ##  Sampling mode: columnwise_full
-        dist_1 = distribution(uniform, th, n; num_samples = 0.8, sampling_mode = :columnwise_full)
-        dist_2 = distribution(uniform, th, n; num_samples = 0.8, sampling_mode = :columnwise_full)
-        sz = size(dist_1)
-        @test sz == size(dist_2)
-        for i in 1:sz[2]
-            @test dist_1[:, i] == dist_2[:, i]
+        true
+    end
+
+    @test_nothing distribution(x, 0.27, 2; sampling = Full())
+end
+
+@testset "distributions: AbstractArray + CPUCore" begin
+    x = rand(1, 100, 100)
+    y = rand(1, 100, 100)
+
+    @test_nothing distribution(x, y, Rect(Standard(0.27), (2, 1, 2, 1)))
+    @test_nothing distribution(x, Rect(Standard(0.27), (2, 1, 2, 1)))
+
+    dist_1 = distribution(x, Rect(Standard(0.27), (2, 1, 2, 1)))
+    dist_2 = distribution(x, Rect(Standard(0.27), (2, 1, 2, 1)))
+
+    @test dist_1 isa Probabilities
+    @test dist_2 isa Probabilities
+
+    @test begin
+        
+        outcomes_1 = outcomes(dist_1)
+        outcomes_2 = outcomes(dist_2)
+
+        @test length(outcomes_1) == length(outcomes_2)
+
+        for i in eachindex(outcomes_1)
+            if abs(dist_1[i] - dist_2[i]) ≥ TOLERANCE_DIST
+                return false
+            end
         end
 
-        ##  Sampling mode: triangle up
-        dist_1 = distribution(uniform, th, n; num_samples = 0.5, sampling_mode = :triangleup)
-        dist_2 = distribution(uniform, th, n; num_samples = 0.5, sampling_mode = :triangleup)
-        @test length(dist_1) == length(dist_2) == 2^(n * n)
-        @test sqrt(js_divergence(dist_1, dist_2)) < 0.1
-
-        ##  Test using "prepare"
-        dist_1 = distribution(sol, 2.7, n; transient = 10000, K = 1000)
-        dist_2 = distribution(sol, 2.7, n; transient = 10000, K = 1000)
-        @test length(dist_1) == length(dist_2) == 2^(n * n)
-        @test sqrt(js_divergence(dist_1, dist_2)) < 0.1
+        true
     end
 end
-## ----------------------------------------------------------------------------------------
-##          Triangle motifs
-@testset "triangle motif" begin
-    for n in motif_n
-        th, s = find_parameters(uniform, n; shape = :triangle)
 
-        ##  Sampling mode: random
-        dist_1 = distribution(uniform, th, n; num_samples = 0.5, sampling_mode = :random, shape = :triangle)
-        dist_2 = distribution(uniform, th, n; num_samples = 0.5, sampling_mode = :random, shape = :triangle)
-        @test sqrt(js_divergence(dist_1, dist_2)) < 0.1
+@testset "motif shapes (with CPUCore)" begin
+    @testset "RP and CRP" begin
+        x = StateSpaceSet(rand(1000))
+        y = StateSpaceSet(rand(2000))
 
-        ##  Sampling mode: full
-        dist_1 = distribution(uniform, th, n; sampling_mode = :full, shape = :triangle)
-        dist_2 = distribution(uniform, th, n; sampling_mode = :full, shape = :triangle)
-        @test sqrt(js_divergence(dist_1, dist_2)) < 0.1
+        @test_nothing distribution(x, Rect(Standard(0.27), 2))
+        @test_nothing distribution(x, Rect(Standard(0.27), 3))
+        @test_nothing distribution(x, Rect(3, 2))
+        @test_nothing distribution(x, Triangle(Standard(0.27), 2))
+        @test_nothing distribution(x, Triangle(Standard(0.27), 3))
+        @test_nothing distribution(x, Diagonal(Standard(0.27), 2))
+        @test_nothing distribution(x, Diagonal(Standard(0.27), 3))
+
+        @test_nothing distribution(x, y, Rect(Standard(0.27), 2))
+        @test_nothing distribution(x, y, Rect(Standard(0.27), 3))
+        @test_nothing distribution(x, y, Triangle(Standard(0.27), 2))
+        @test_nothing distribution(x, y, Triangle(Standard(0.27), 3))
+        @test_nothing distribution(x, y, Diagonal(Standard(0.27), 2))
+        @test_nothing distribution(x, y, Diagonal(Standard(0.27), 3))
+    end
+    
+    @testset "SRP and CSRP" begin
+        x = rand(1, 100, 100)
+        y = rand(1, 100, 100)
+
+        @test_nothing distribution(x, Rect(Standard(0.27), (2, 2, 1, 1)))
+        @test_nothing distribution(x, Rect(Standard(0.27), (3, 3, 1, 1)))
+        @test_nothing distribution(x, Diagonal(Standard(0.27), 2))
+        @test_nothing distribution(x, Diagonal(Standard(0.27), 3))
+
+        @test_nothing distribution(x, y, Rect(Standard(0.27), (2, 2, 1, 1)))
+        @test_nothing distribution(x, y, Rect(Standard(0.27), (3, 3, 1, 1)))
+        @test_nothing distribution(x, y, Diagonal(Standard(0.27), 2))
+        @test_nothing distribution(x, y, Diagonal(Standard(0.27), 3))
     end
 end
-## ----------------------------------------------------------------------------------------
-##          
+
+@testset "recurrence expressions (with CPUCore)" begin
+    @test Standard(0.27) isa RecurrenceExpression
+    @test Standard(0.27; metric = Cityblock()) isa RecurrenceExpression
+    @test Corridor(0.05, 0.27) isa RecurrenceExpression
+    @test Corridor(0.05, 0.27; metric = Cityblock()) isa RecurrenceExpression
+    
+    @testset "RP and CRP" begin
+        x = StateSpaceSet(rand(1000))
+        y = StateSpaceSet(rand(2000))
+        @test_nothing distribution(x, Standard(0.27), 2)
+        @test_nothing distribution(x, Standard(0.27; metric = Cityblock()), 2)
+        @test_nothing distribution(x, Corridor(0.05, 0.27), 2)
+        @test_nothing distribution(x, Corridor(0.05, 0.27; metric = Cityblock()), 2)
+
+        @test_nothing distribution(x, y, Standard(0.27), 2)
+        @test_nothing distribution(x, y, Standard(0.27; metric = Cityblock()), 2)
+        @test_nothing distribution(x, y, Corridor(0.05, 0.27), 2)
+        @test_nothing distribution(x, y, Corridor(0.05, 0.27; metric = Cityblock()), 2)
+    end
+
+    @testset "SRP and CSRP" begin
+        x = rand(1, 100, 100)
+        y = rand(1, 100, 100)
+
+        @test_nothing distribution(x, Rect(Standard(0.27), (2, 2, 1, 2)))
+        @test_nothing distribution(x, Rect(Standard(0.27; metric = Cityblock()), (2, 2, 1, 2)))
+        @test_nothing distribution(x, Rect(Corridor(0.05, 0.27), (2, 2, 1, 2)))
+        @test_nothing distribution(x, Rect(Corridor(0.05, 0.27; metric = Cityblock()), (2, 2, 1, 2)))
+
+        @test_nothing distribution(x, y, Rect(Standard(0.27), (2, 2, 1, 2)))
+        @test_nothing distribution(x, y, Rect(Standard(0.27; metric = Cityblock()), (2, 2, 1, 2)))
+        @test_nothing distribution(x, y, Rect(Corridor(0.05, 0.27), (2, 2, 1, 2)))
+        @test_nothing distribution(x, y, Rect(Corridor(0.05, 0.27; metric = Cityblock()), (2, 2, 1, 2)))
+    end
+end
+
+@testset "sampling mode (CPU backend)" begin
+    @testset "RP and CRP" begin
+        x = StateSpaceSet(rand(1000))
+        y = StateSpaceSet(rand(2000))
+        @test_nothing distribution(x, Standard(0.27), 2; sampling = SRandom(0.05))
+        @test_nothing distribution(x, Standard(0.27), 2; sampling = SRandom(500))
+        @test_nothing distribution(x, Standard(0.27), 2; sampling = Full())
+
+        @test_nothing distribution(x, y, Standard(0.27), 2; sampling = SRandom(0.05))
+        @test_nothing distribution(x, y, Standard(0.27), 2; sampling = SRandom(500))
+        @test_nothing distribution(x, y, Standard(0.27), 2; sampling = Full())
+    end
+
+    @testset "SRP and CSRP" begin
+        x = rand(1, 100, 100)
+        y = rand(1, 100, 100)
+
+        @test_nothing distribution(x, Rect(Standard(0.27), (2, 2, 1, 2)); sampling = SRandom(0.05))
+        @test_nothing distribution(x, Rect(Standard(0.27), (2, 2, 1, 2)); sampling = SRandom(500))
+
+        @test_nothing distribution(x, y, Rect(Standard(0.27), (2, 2, 1, 2)); sampling = SRandom(0.05))
+        @test_nothing distribution(x, y, Rect(Standard(0.27), (2, 2, 1, 2)); sampling = SRandom(500))
+    end
+end

@@ -1,92 +1,63 @@
-#
-#           RecurrenceMicrostatesAnalysis.jl
-#       DynamicsUFPR - https://github.com/DynamicsUFPR
-#       
-#
-#           Abstract: The idea of this project is to create a standard library that
-#   can be used in the application and development of Recurrence Microstates Theory
-#   and its associated quantifiers. Here we try to generalize the computational process
-#   so that it can be applied to any data situation, such as time series, images, or 
-#   high-dimensional data.
-#
-#       GitHub - Julia Version: https://github.com/DynamicsUFPR/RMA.jl
-#
-#       ----- BEGIN CODE
 module RecurrenceMicrostatesAnalysis
-    #
-    #       Libraries needed for work.
-    using Distances
-    using Statistics
 
-    #       Basic metric
-    const euclidean_metric = Euclidean()
+@doc let 
+    path = joinpath(dirname(@__DIR__), "README.md")
+    include_dependency(path)
+    read(path, String)
+end RecurrenceMicrostatesAnalysis
 
-    #
-    #       Import the code source.
-    # ======================================================================================================= #
-    #           * RMA Core
-    #   i. Import the recurrence functions.
-    include("rma/recurrence.jl")
-    #   ii. Import the functions that convert a motif to an index.
-    include("rma/index.jl")
-    #   iii. Import the distribution function.
-    include("rma/distribution.jl")
-    #   iv. Import histogram functions
-    # ------------------------------------------------------------------------------------------------------- #
-    #       - Shape: square
-    include("rma/histograms/square/square_full.jl")
-    include("rma/histograms/square/square_random.jl")
-    include("rma/histograms/square/square_triangleup.jl")
-    include("rma/histograms/square/square_columnwise.jl")
-    include("rma/histograms/square/square_columnwise_full.jl")
-    # ------------------------------------------------------------------------------------------------------- #
-    #       - Shape: triangle
-    include("rma/histograms/triangle/triangle_full.jl")
-    include("rma/histograms/triangle/triangle_random.jl")
-    # ------------------------------------------------------------------------------------------------------- #
-    #       - Shape: time pair
-    include("rma/histograms/pair/pair_random.jl")
-    include("rma/histograms/pair/pair_columnwise.jl")
-    # ------------------------------------------------------------------------------------------------------- #
-    #       - Shape: diagonal
-    include("rma/histograms/diagonal/diagonal_full.jl")
-    include("rma/histograms/diagonal/diagonal_random.jl")
-    # ------------------------------------------------------------------------------------------------------- #
-    #       - Shape: line
-    include("rma/histograms/line/line_random.jl")
-    # ======================================================================================================= #
-    #           * RMA Analysis
-    #       - Recurrence Rate (RR)
-    include("rqa/rr.jl")
-    #       - Determinism (DET)
-    include("rqa/det.jl")
-    #       - Laminarity (LAM)
-    include("rqa/lam.jl")
-    #       - Recurrence Entropy (RETR)
-    include("rqa/entropy.jl")
-    #       - Disorder (Ξ)
-    include("rqa/disorder.jl")
-    # ======================================================================================================= #
-    #           * RMA Utils
-    include("utils/prepare.jl")
-    include("utils/find_parameters.jl")
-    # ======================================================================================================= #
-    using .Disorder
-    # ======================================================================================================= #
-    #
-    #       Export some functions to the main scope (PublicAPI)
-    # ======================================================================================================= #
-    export rrate
-    export prepare
-    export rentropy
-    export disorder
-    export laminarity
-    export recurrence
-    export determinism
-    export distribution
-    export find_parameters
+##########################################################################################
+#   Packages and constants
+##########################################################################################
+using Atomix
+using Combinatorics
+using ComplexityMeasures
+using Distances
+using GPUArraysCore
+using KernelAbstractions
+using Random
+using Reexport
+using StaticArrays
 
-    export jrp
-    # ======================================================================================================= #
+@reexport using Adapt
+@reexport using StateSpaceSets
+
+const DEFAULT_METRIC = Euclidean()
+
+##########################################################################################
+#   Core API types and functions
+##########################################################################################
+include("core/abstract_core.jl")
+include("core/recurrence.jl")
+include("core/shape.jl")
+include("core/sampling.jl")
+
+include("core/cpu_core.jl")
+
+include("core/gpu/gpu_metric.jl")
+include("core/gpu/gpu_core.jl")
+
+include("core/measures.jl")
+include("core/optimize.jl")
+include("core/operation.jl")
+
+##########################################################################################
+#   Recurrence functions, motif shapes, and sampling modes
+##########################################################################################
+include("recurrences/recurrences.jl")
+include("shapes/shapes.jl")
+include("sampling/sampling.jl")
+
+##########################################################################################
+#   Quantifiers
+##########################################################################################
+include("rqa/rqa.jl")
+
+##########################################################################################
+#   Utils
+##########################################################################################
+include("utils/gpu_metrics/gpu_metrics.jl")
+include("utils/opt/opt.jl")
+include("utils/operations/ops.jl")
+
 end
-#       ----- END CODE

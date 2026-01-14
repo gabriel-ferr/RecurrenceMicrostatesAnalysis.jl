@@ -1,0 +1,10 @@
+ignore:
+  - "src/core/gpu/**"
+  - "src/core/sampling.jl"
+  - "src/core/shape.jl"
+  - "src/core/abstract_core.jl"
+  - "src/core/recurrence.jl"
+  - "src/core/measures.jl"
+  - "src/core/operation.jl"
+  - "src/core/optimize.jl"
+  - "src/utils/gpu_metrics/**"

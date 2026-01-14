@@ -1,67 +1,82 @@
+export RecurrenceRate
 
+##########################################################################################
+#   Quantification Measure: RecurrenceRate
+##########################################################################################
 """
-    rrate([probs])
+    RecurrenceRate <: QuantificationMeasure
 
-Compute the approximated recurrence rate of a RP from a probability distribution of recurrence microstates. Here, we use a relation between
-the mean recurrence rate of each motif and the desired value. It can be written as
+Define the *Recurrence Rate* (RR) quantification measure.
 
-```math
-RR \\approx \\sum_{I = 0}^N \\mathbf{p}_I^{(k)}\\left(\\frac{1}{k^2}\\sum_{i=1}^k\\sum_{j=1}^k \\mathbf{M}_{ij}^{(I)}\\right),
+RR can be computed either from a distribution of recurrence microstates or directly from
+time-series data. In both cases, the computation is performed via the [`measure`](@ref)
+function.
+
+#   Using a distribution
+```julia
+measure(::RecurrenceRate, dist::Probabilities)
 ```
 
-where \$\\mathbf{M}_{ij}^{(I)}\$ is the motif structure.
+##  Arguments
+- `dist`: A distribution of recurrence microstates.
 
-Input:
-* `[probs]`: the vector of probabilities \$\\mathbf{p}^{(k)}\$ computed using `distribution(...)`.
+##  Returns
+A `Float64` corresponding to the estimated recurrence rate.
 
-Output: returns the recurrence rate as a `Float64`.
+##  Examples
+```julia
+using RecurrenceMicrostatesAnalysis, Distributions
+data = StateSpaceSet(rand(Uniform(0, 1), 1000))
+dist = distribution(data, 0.27, 3)
+rr = measure(RecurrenceRate(), dist)
+```
+
+#   Using a time series
+```julia
+measure(::RecurrenceRate, [x]; kwargs...)
+```
+##  Arguments
+- `[x]`: Time-series data provided as a [`StateSpaceSet`](@ref).
+
+##  Returns
+A `Float64` corresponding to the estimated recurrence rate.
+
+##  Keyword Arguments
+- `N`: Integer defining the microstate size. The default value is `3`.
+- `threshold`: Threshold used to compute the RMA distribution. By default, this is chosen as
+    the threshold that maximizes the recurrence microstate entropy (RME).
+
+##  Examples
+```julia
+using RecurrenceMicrostatesAnalysis, Distributions
+data = StateSpaceSet(rand(Uniform(0, 1), 1000))
+rme = measure(RecurrenceRate(), data; N = 4)
+```
 """
-function rrate(
-        probs::Vector{Float64}
-    )
+struct RecurrenceRate <: QuantificationMeasure end
 
+##########################################################################################
+#   Implementation: measure
+##########################################################################################
+#       Using as input a RMA distribution.
+#.........................................................................................
+function measure(::RecurrenceRate, dist::Probabilities)
     result = 0.0
-    hv = Int(log2(length(probs)))
+    hv = Int(log2(length(dist)))
 
-    ##
-    ##       Compute the recurrence rate.
-    for i in eachindex(probs)
-        rr = sum(digits(i - 1, base = 2)) / hv
-        result += rr * probs[i]
+    for i in eachindex(dist)
+        rr = count_ones(i - 1) / hv
+        result += rr * dist[i]
     end
 
     return result
 end
-
-"""
-    rrate([x], [parameters], n::Int; shape::Symbol, sampling_mode::Symbol, r::Float64})
-
-Compute the approximated recurrence rate of a Recurrence Plot from a data `[x]` using a probability
-distribution of recurrence microstates computed from it.
-
-Input:
-* `[x]`: input data.
-* `[parameter]`: set of parameters used to compute the recurrence microstate distribution.
-* `n`: microstate size.
-* `shape` **(kwarg)**: shape of the used motifs. `:square` by default, it can be: `:square, :triangle, :pair, :diagonal, :line`.
-* `sampling_mode` **(kwarg)**: sampling mode used. `:random` by default, it can be: `:square, :triangle, :pair, :diagonal, :line`.
-* `r` **(kwarg)**: ratio of the total number of microstates to be sampled for the histogram. (default `r = 0.05`)
-
-Output: returns the recurrence rate as a `Float64`.
-"""
-function rrate(
-        x::AbstractArray, 
-        parameters, 
-        n::Int; 
-        shape::Symbol = :square, 
-        sampling_mode::Symbol = :random, 
-        r::Float64= 0.05
-    )
-    
-    if (sampling_mode == :columnwise || sampling_mode == :columnwise_full)
-        throw("The sampling $(sampling_mode) is invalid.")
-    end
-
-    probs = distribution(x, parameters, n; shape = shape, sampling_mode = sampling_mode, num_samples = r)
-    return rrate(probs)
+#.........................................................................................
+#       Using as input a time series
+#.........................................................................................
+function measure(::RecurrenceRate, x::StateSpaceSet; n::Integer = 3, threshold::Real = optimize(Threshold(), RecurrenceEntropy(), x, n)[1])
+    dist = distribution(x, threshold, n)
+    return measure(RecurrenceRate(), dist)
 end
+
+##########################################################################################
