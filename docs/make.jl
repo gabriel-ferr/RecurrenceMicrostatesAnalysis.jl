@@ -42,7 +42,7 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/gabriel-ferr/RecurrenceMicrostatesAnalysis.jl.git",
+    repo = "github.com/DynamicsUFPR/RecurrenceMicrostatesAnalysis.jl.git",
     target = "build",
     push_preview = true
 )
