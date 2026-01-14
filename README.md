@@ -11,7 +11,7 @@ RMA is a subfield of Recurrence Analysis and is a powerful tool for analyzing la
 using statistical methods, offering high performance and avoiding memory issues. Although the field is still
 relatively new, it has shown promising applications, including in [Machine Learning](https://doi.org/10.1063/5.0203801).
 
-The package was redesigned in version `0.4.0` to be compatible with [DynamicalSystems](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/dynamicalsystems/stable/)
+The package was redesigned in version `0.4.0` to be compatible with [DynamicalSystems.jl](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/dynamicalsystems/stable/)
 ecosystem. We therefore recommend exploring the other packages in this ecosystem — especially [ComplexityMeasures.jl](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/complexitymeasures/stable/)
 and [RecurrenceAnalysis.jl](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/recurrenceanalysis/stable/) —
 which can be very useful when working with RMA.
