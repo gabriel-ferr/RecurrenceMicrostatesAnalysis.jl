@@ -223,6 +223,12 @@ distribution(
     metric::GPUMetric = GPUEuclidean()
 ) where {N} = distribution(x, x, ε, n; rate = rate, sampling = sampling, groupsize = groupsize, backend = backend, metric = metric)
 #.........................................................................................
+distribution(
+    core::GPUCore,
+    x;
+    groupsize::Int = 256,
+) = distribution(core, x, x; groupsize = groupsize)
+#.........................................................................................
 """
     distribution(core::GPUCore, [x], [y]; kwargs...)
 

@@ -57,4 +57,13 @@ end
     @test 0 ≤ measure(Disorder(3), x) ≤ 1
     @test 0 ≤ measure(Disorder(4), x) ≤ 1
     # @test 0 ≤ measure(Disorder(5), x) ≤ 1
+
+    x = rand(Uniform(0, 1), 2000)
+    windows = [x[(i+1):(i+250)] for i in 0:250:(length(x) - 250)]
+    dataset = Vector{StateSpaceSet}(undef, length(windows))
+    for i ∈ eachindex(windows)
+        dataset[i] = StateSpaceSet(windows[i])
+    end
+
+    @test_nothing measure(Disorder(2), dataset, 0.25, 0.29)
 end

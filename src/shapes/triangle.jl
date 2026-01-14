@@ -69,3 +69,13 @@ end
     elems = [ :(SVector{2, Int}($i, $j)) for j in 0:(N - 1) for i in 0:j]
     return :( SVector{$(N*(N + 1) ÷ 2), $(SVector{2, Int})}( $(elems...) ) )
 end
+
+@generated function get_power_vector(::GPUCore, ::Triangle{N, B, E}) where {N, B, E}
+    expr = :(SVector{$(N*(N + 1) ÷ 2)}( $([:(Int32(B^$( (((j - 1) * j) ÷ 2) + (i - 1) ))) for j in 1:N for i in 1:j]... ) ))
+    return expr
+end
+
+@generated function get_offsets(::GPUCore, ::Triangle{N, B, E}) where {N, B, E}
+    elems = [ :(SVector{2, Int32}($(Int32(i)), $(Int32(j)))) for j in 0:(N - 1) for i in 0:j]
+    return :( SVector{$(N*(N + 1) ÷ 2), $(SVector{2, Int32})}( $(elems...) ) )
+end

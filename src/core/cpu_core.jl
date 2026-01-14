@@ -281,6 +281,12 @@ distribution(
     threads::Int = Threads.nthreads()
 ) = distribution(x, x, shape; rate = rate, sampling = sampling, threads = threads)
 #.........................................................................................
+distribution(
+    core::CPUCore, 
+    x;
+    threads = Threads.nthreads()
+) = distribution(core, x, x; threads = threads)
+#.........................................................................................
 """
     distribution(core::CPUCore, [x], [y]; kwargs...)
 

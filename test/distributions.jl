@@ -14,6 +14,7 @@ const TOLERANCE_DIST = 1e-5
     @test_nothing distribution(x, y, Rect(Standard(0.27), 2))
     @test_nothing distribution(x, y, Standard(0.27), 2)
     @test_nothing distribution(x, y, 0.27, 2)
+    @test_nothing distribution(CPUCore(Rect(Standard(0.27), 2), SRandom(0.05)), x)
     @test_nothing distribution(x, Rect(Standard(0.27), 2))
     @test_nothing distribution(x, Standard(0.27), 2)
     @test_nothing distribution(x, 0.27, 2)
@@ -151,9 +152,11 @@ end
         x = StateSpaceSet(rand(1000))
         y = StateSpaceSet(rand(2000))
         @test_nothing distribution(x, Standard(0.27), 2; sampling = SRandom(0.05))
+        @test_nothing distribution(x, Standard(0.27), 2; sampling = SRandom(500))
         @test_nothing distribution(x, Standard(0.27), 2; sampling = Full())
 
         @test_nothing distribution(x, y, Standard(0.27), 2; sampling = SRandom(0.05))
+        @test_nothing distribution(x, y, Standard(0.27), 2; sampling = SRandom(500))
         @test_nothing distribution(x, y, Standard(0.27), 2; sampling = Full())
     end
 
@@ -162,7 +165,9 @@ end
         y = rand(1, 100, 100)
 
         @test_nothing distribution(x, Rect(Standard(0.27), (2, 2, 1, 2)); sampling = SRandom(0.05))
+        @test_nothing distribution(x, Rect(Standard(0.27), (2, 2, 1, 2)); sampling = SRandom(500))
 
         @test_nothing distribution(x, y, Rect(Standard(0.27), (2, 2, 1, 2)); sampling = SRandom(0.05))
+        @test_nothing distribution(x, y, Rect(Standard(0.27), (2, 2, 1, 2)); sampling = SRandom(500))
     end
 end
