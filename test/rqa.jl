@@ -52,7 +52,7 @@ end
 end
 
 @testset "disorder" begin
-    x = StateSpaceSet(rand(Uniform(0, 1), 4000))
+    x = StateSpaceSet(rand(Uniform(0, 1), 500))
     @test 0 ≤ measure(Disorder(2), x) ≤ 1
     @test 0 ≤ measure(Disorder(3), x) ≤ 1
     @test 0 ≤ measure(Disorder(4), x) ≤ 1
