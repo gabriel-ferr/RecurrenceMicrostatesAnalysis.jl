@@ -242,15 +242,19 @@ Disorder
 
 Consider a scenario in which a long time series is split into multiple windows. **RecurrenceMicrostatesAnalysis.jl** provides a compact interface to compute the disorder for each window.
 
-As an example, consider a time series with 50,000 points consisting of a sine wave with added white noise, alternating every five windows:
+As an example, consider a time series with 10,000 points consisting of a sine wave with added white noise, alternating every five windows:
+```@example disorder
+data_len = 10_000
+window_len = 500
+```
 ```@example disorder
 function data_gen(t)
     x = sin.(6*π .* t)
 
     count = 0
-    for i in 1:1000:50_000
+    for i in 1:window_len:data_len
         if count < 5
-            x[i:(i-1)+1000] .+= rand(Normal(0, 0.25), 1000)
+            x[i:(i-1)+window_len] .+= rand(Normal(0, 0.25), window_len)
         elseif count ≥ 9
             count = -1
         end
@@ -264,7 +268,7 @@ end
 ```@example disorder
 using CairoMakie
 
-t = range(0, 50, 50_000)
+t = range(0, 20, data_len)
 data = data_gen(t)
 
 lines(t, data)
@@ -277,7 +281,7 @@ measure(settings::Disorder{N}, dataset::Vector{StateSpaceSet}, th_min::Float64, 
 
 To apply it, the time series must first be split into a vector of [`StateSpaceSet`](@ref) objects:
 ```@example disorder
-windows = [ data[(i + 1):(i + 1000)] for i in 0:1000:(length(data) - 1000)]
+windows = [ data[(i + 1):(i + window_len)] for i in 0:window_len:(length(data) - window_len)]
 dataset = Vector{StateSpaceSet}(undef, length(windows))
 for i ∈ eachindex(windows)
     dataset[i] = StateSpaceSet(windows[i])
