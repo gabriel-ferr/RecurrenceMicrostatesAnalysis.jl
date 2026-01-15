@@ -62,7 +62,9 @@ function recurrence(
     ::Int,
     ::Int,
 )
-    error("The recurrence computation is not implemented to a recurrence expression of type '$(typeof(expr))' with input types: \n\t x: '$(typeof(x))'\n\t y: '$(typeof(y))')")
+    T = typeof(expr)
+    msg = "`recurrence` not implemented to $T and input data types $(typeof(x)) for `x` and $(typeof(y)) for `y`."
+    throw(ArgumentError(msg))
 end
 #.........................................................................................
 #   Based on spatial data: (CPU)
@@ -74,7 +76,9 @@ function recurrence(
     ::NTuple{N, Int}, 
     ::NTuple{M, Int},
 ) where {N, M} 
-    error("The recurrence computation is not implemented to a recurrence expression of type '$(typeof(expr))' with input types: \n\t x: '$(typeof(x))'\n\t y: '$(typeof(y))')")
+    T = typeof(expr)
+    msg = "`recurrence` not implemented to $T and input data types $(typeof(x)) for `x` and $(typeof(y)) for `y`."
+    throw(ArgumentError(msg))
 end
 
 ##########################################################################################

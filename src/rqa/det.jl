@@ -96,7 +96,8 @@ function measure(::Determinism, dist::Probabilities)
         rr = measure(RecurrenceRate(), dist)
         return 1 - ((1/rr) * dist[3])
     else
-        error("Determinism must be computed using square or diagonal motifs with n = 3.")
+        msg = "Determinism must be computed using square or diagonal microstates with n = 3."
+        throw(ArgumentError(msg))
     end
 end
 #.........................................................................................

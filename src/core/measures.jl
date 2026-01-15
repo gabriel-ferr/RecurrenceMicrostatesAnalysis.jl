@@ -31,7 +31,9 @@ Compute the quantification measure defined by the given [`QuantificationMeasure`
 The accepted arguments (`[...]`) depend on the specific quantifier implementation.
 """
 function measure(ms::QuantificationMeasure)
-    error("There isn't a 'measure' implementation for '$(typeof(ms))'.")
+    T = typeof(ms)
+    msg = "`measures` not implemented without arguments for $T."
+    throw(ArgumentError(msg))
 end
 
 ##########################################################################################

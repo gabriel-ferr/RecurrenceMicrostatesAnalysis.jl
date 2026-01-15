@@ -21,7 +21,9 @@ abstract type GPUMetric <: Metric end
 #   Implementation: evaluate
 ##########################################################################################
 function gpu_evaluate(metric::GPUMetric, ::SVector{N, Float32}, ::SVector{N, Float32}) where {N}
-    error("Invalid '$(typeof(metric))' implementation.")
+    T = typeof(metric)
+    msg = "`gpu_evaluate` not implemented for $T."
+    throw(ArgumentError(msg))
 end
 
 ##########################################################################################

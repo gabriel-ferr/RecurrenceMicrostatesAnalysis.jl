@@ -37,7 +37,8 @@ struct Standard{F <: Real, M <: Metric} <: RecurrenceExpression
 end
 #.........................................................................................
 function Standard(ε::Real; metric::Metric = DEFAULT_METRIC)
-     return Standard(ε, metric)
+    @assert ε >= 0 throw(ArgumentError("threshold must be greater than zero."))
+    return Standard(ε, metric)
 end
 
 ##########################################################################################

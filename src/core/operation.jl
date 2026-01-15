@@ -27,7 +27,9 @@ Apply the operation defined by the given [`Operation`](@ref) instance.
 The accepted arguments (`[...]`) depend on the specific operation implementation.
 """
 function operate(op::Operation)
-    error("Not implemented operation without arguments: $(typeof(op))")
+    T = typeof(op)
+    msg = "`operate` not implemented without arguments for $T."
+    throw(ArgumentError(msg))
 end
 
 ##########################################################################################

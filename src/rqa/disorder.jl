@@ -49,7 +49,7 @@ struct Disorder{N} <: QuantificationMeasure
     labels::Vector{Vector{Int}}
 end
 #.........................................................................................
-Disorder(N::Int = 3) = 1 < N < 6 ? Disorder{N}(compute_labels(N)) : error("It is not possible to compute disorder for `N = $N`.")
+Disorder(N::Int = 3) = 1 < N < 6 ? Disorder{N}(compute_labels(N)) : throw(ArgumentError("Disorder not implemented for N ≤ 1 or N ≥ 6."))
 
 ##########################################################################################
 #   Implementation: measure
@@ -152,7 +152,7 @@ get_disorder_norm_factor(::Disorder{N}, ::StateSpaceSet{D, T, V}) where {N, D, T
 _norm_factor(::Val{2}, ::Val{D}) where D = 4
 _norm_factor(::Val{3}, ::Val{D}) where D = D > 1 ? 24 : 23
 _norm_factor(::Val{4}, ::Val{D}) where D = D > 1 ? 190 : 145
-_norm_factor(::Val{5}, ::Val{D}) where D = D > 1 ? error("Not implemented disorder using N = 5 to data with more than 1 dimension.") : 1173
+_norm_factor(::Val{5}, ::Val{D}) where D = D > 1 ? throw(ArgumentError("Disorder not implemented using N = 5 for data with more than one dimension.")) : 1173
 
 ##########################################################################################
 #   Compute labels
