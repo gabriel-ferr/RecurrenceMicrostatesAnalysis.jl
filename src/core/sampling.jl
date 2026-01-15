@@ -36,7 +36,7 @@ SamplingSpace(
     shape::MicrostateShape, 
     x::Union{StateSpaceSet, AbstractGPUVector{SVector{N, Float32}}}, 
     y::Union{StateSpaceSet, AbstractGPUVector{SVector{N, Float32}}}
-) where {N} = throw("The sampling space is not implemented for a motif shape of type '$(typeof(shape))' with input types: \n\t x: '$(typeof(x))'\n\t y: '$(typeof(y))')")
+) where {N} = throw(ArgumentError("`SamplingSpace` not implemented for a microstate shape $(typeof(shape)), and input data types $(typeof(x)) for `x`, and $(typeof(y)) for `y`."))
 #.........................................................................................
 #   Based on spatial data: SRP & CSRP (CPU)
 #.........................................................................................
@@ -48,7 +48,7 @@ SamplingSpace(
     shape::MicrostateShape, 
     x::AbstractArray{<: Real}, 
     y::AbstractArray{<: Real}
-) = error("The sampling space is not implemented for a motif shape of type '$(typeof(shape))' with input types: \n\t x: '$(typeof(x))'\n\t y: '$(typeof(y))')")
+) = throw(ArgumentError("`SamplingSpace` not implemented for a microstate shape $(typeof(shape)), and input data types $(typeof(x)) for `x`, and $(typeof(y)) for `y`."))
 
 ##########################################################################################
 #   Implementation: sampling
@@ -58,7 +58,8 @@ function get_sample(
     mode::SamplingMode,
     space::SamplingSpace
 )
-    error("'get_sample' is not implemented for the set: \t\n Core: $(typeof(core)) \t\n Mode: $(typeof(mode)) \t\n Space: $(typeof(space))")
+    msg = "`get_sample` not implemented for core $(typeof(core)), sampling mode $(typeof(mode)), and sampling space $(typeof(space))"
+    throw(ArgumentError(msg))
 end
 
 ##########################################################################################
@@ -68,7 +69,8 @@ function get_num_samples(
     mode::SamplingMode,
     space::SamplingSpace
 )
-    error("The number of samples is not implemented for a sampling space of type '$(typeof(space))' with sampling mode of type '$(typeof(mode))'")
+    msg = "`get_num_samples` not implemented for sampling mode $(typeof(mode)), and sampling space $(typeof(space))"
+    throw(ArgumentError(msg))
 end
 
 ##########################################################################################

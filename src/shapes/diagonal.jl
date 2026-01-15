@@ -106,7 +106,7 @@ end
 end
 
 @generated function get_offsets(::CPUCore, ::Diagonal{N, B, E}) where {N, B, E}
-    elems = [ :(SVector{2, Int}($w, $w)) for w in 0:(N - 1)]
+    elems = [ :(SVector{2, Int}($n, $n)) for n in 0:(N - 1)]
     return :( SVector{$N, $(SVector{2, Int})}( $(elems...) ) )
 end
 
@@ -116,6 +116,6 @@ end
 end
 
 @generated function get_offsets(::GPUCore, ::Diagonal{N, B, E}) where {N, B, E}
-    elems = [ :(SVector{2, Int32}($(Int32(w)), $(Int32(w)))) for w in 0:(W - 1)]
+    elems = [ :(SVector{2, Int32}($(Int32(n)), $(Int32(n)))) for n in 0:(N - 1)]
     return :( SVector{$N, $(SVector{2, Int32})}( $(elems...) ) )
 end

@@ -38,7 +38,12 @@ The result is returned as a [`Counts`](@ref) object, where each index correspond
 representation of the associated microstate.
 """
 function histogram(core::RMACore, x, y)
-    error("The RMA core of type '$(typeof(core))' is not implemented for input types: \n\t x: '$(typeof(x))'\n\t y: '$(typeof(y))')")
+    core_type = typeof(core)
+    x_type = typeof(x)
+    y_type = typeof(y)
+
+    msg = "`histogram` not implemented for $core_type and input data of types $x_type and $y_type."
+    throw(ArgumentError(msg))
 end
 #.........................................................................................
 """
@@ -61,7 +66,12 @@ Internally, `distribution` calls [`histogram`](@ref) and converts the resulting 
 probabilities.
 """
 function distribution(core::RMACore, x, y)
-    error("The RMA core of type '$(typeof(core))' is not implemented for input types: \n\t x: '$(typeof(x))'\n\t y: '$(typeof(y))')")
+    core_type = typeof(core)
+    x_type = typeof(x)
+    y_type = typeof(y)
+
+    msg = "`distribution` not implemented for $core_type and input data of types $x_type and $y_type."
+    throw(ArgumentError(msg))
 end
 
 ##########################################################################################

@@ -21,3 +21,5 @@ The overall usage of the `distribution` function remains similar, but its config
 - The `distribution` function is no longer configured via **keyword arguments** for the microstate shape and recurrence function. These are now specified using the types `MicrostateShape` and `RecurrenceExpression`. 
     The sampling mode and sampling ratio remain configurable via **keyword arguments**, but `SamplingMode` is now a type rather than a symbol, and the keyword `sampling_mode` has been renamed to `sampling`.
 - The inputs of `distributions` and `histogram` for time series are no longer `Vector` or `Matrix`. They must now be provided as a `StateSpaceSet`.
+- The sampling modes `:columnwise` and `:triangleup` have been temporarily removed.
+- The microstate shapes `:square` and `:line` were unified into the unique type `Rect`.

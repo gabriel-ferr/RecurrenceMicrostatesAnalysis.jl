@@ -26,7 +26,9 @@ Optimize a free [`Parameter`](@ref) using the specified [`QuantificationMeasure`
     Avoid calling it inside performance-critical loops.
 """
 function optimize(param::Parameter, qm::QuantificationMeasure)
-    error("The 'optimize' is not implemented to the parameter '$(typeof(param))' for the measure '$(typeof(qm))'.")
+    T = typeof(param)
+    msg = "`optimize` not implemented without arguments for $T using the quantification measure $(typeof(qm))."
+    throw(ArgumentError(msg))
 end
 
 ##########################################################################################

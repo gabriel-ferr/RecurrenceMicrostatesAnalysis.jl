@@ -25,10 +25,6 @@ abstract type MicrostateShape end
 ##########################################################################################
 #   Index computation
 ##########################################################################################
-function compute_motif()
-    throw("The index computation is not implemented without arguments.")
-end
-#.........................................................................................
 #   Based on spatial data: (CPU only)
 #.........................................................................................
 function compute_motif(
@@ -39,21 +35,28 @@ function compute_motif(
     ::Vector{Int},
     ::SVector{N, Int}
 ) where {N}
-    error("The index computation is not implemented for a motif shape of type '$(typeof(shape))' with input types: \n\t x: '$(typeof(x))'\n\t y: '$(typeof(y))')")
+    msg = "`compute_motif` not implemented for spatial data and microstate shape $(typeof(shape))."
+    throw(ArgumentError(msg))
 end
 ##########################################################################################
 #   Utils: number of recurrences and power vector.
 ##########################################################################################
 function get_histogram_size(shape::MicrostateShape)
-    error("The histogram size is not implemented for a motif shape of type '$(typeof(shape))'.")
+    T = typeof(shape)
+    msg = "`get_histogram_size` not implemented for $T"
+    throw(ArgumentError(msg))
 end
 #.........................................................................................
 function get_power_vector(core::RMACore, shape::MicrostateShape)
-    error("The power vector is not implemented for a motif shape of type '$(typeof(shape))' and a core of type '$(typeof(core))'.")
+    T = typeof(shape)
+    msg = "`get_power_vector` not implemented for core $(typeof(core)), and microstate shape $T"
+    throw(ArgumentError(msg))
 end
 #.........................................................................................
 function get_offsets(core::RMACore, shape::MicrostateShape)
-    error("Motif's offsets is not implemented for a motif shape of type '$(typeof(shape))' and a core of type '$(typeof(core))'.")
+    T = typeof(shape)
+    msg = "`get_offsets` not implemented for core $(typeof(core)), and microstate shape $T"
+    throw(ArgumentError(msg))
 end
 
 ##########################################################################################

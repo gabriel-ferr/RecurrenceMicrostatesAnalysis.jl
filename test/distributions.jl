@@ -1,173 +1,147 @@
+using Test
+using ComplexityMeasures
 using RecurrenceMicrostatesAnalysis
 
-using Test
-using Distances
-using ComplexityMeasures
+@testset "time series" begin
+    x = rand(100) |> StateSpaceSet
+    y = rand(200) |> StateSpaceSet
+    core = CPUCore(Rect(Standard(0.27), 2), SRandom(0.05))
 
-const TOLERANCE_DIST = 1e-5
+    @test distribution(core, x, y) isa Probabilities
+    @test distribution(core, x) isa Probabilities
 
-@testset "distributions: StateSpaceSet + CPUCore" begin
-    
-    x = StateSpaceSet(rand(1000))
-    y = StateSpaceSet(rand(2000))
+    @test distribution(x, 0.27, 3; rate = 0.1) isa Probabilities
+    @test distribution(x, 0.27, 3; sampling = Full()) isa Probabilities
+    @test distribution(x, 0.27, 3; metric = Cityblock()) isa Probabilities
+    @test distribution(x, 0.27, 3; rate = 0.1, metric = Cityblock()) isa Probabilities
+    @test distribution(x, 0.27, 3; sampling = Full(), metric = Cityblock()) isa Probabilities
 
-    @test_nothing distribution(x, y, Rect(Standard(0.27), 2))
-    @test_nothing distribution(x, y, Standard(0.27), 2)
-    @test_nothing distribution(x, y, 0.27, 2)
-    @test_nothing distribution(CPUCore(Rect(Standard(0.27), 2), SRandom(0.05)), x)
-    @test_nothing distribution(x, Rect(Standard(0.27), 2))
-    @test_nothing distribution(x, Standard(0.27), 2)
-    @test_nothing distribution(x, 0.27, 2)
-    
-    dist_1 = distribution(x, 0.27, 2)
-    dist_2 = distribution(x, 0.27, 2)
+    @test distribution(x, Standard(0.27), 3) isa Probabilities
+    @test distribution(x, Standard(0.27), 3; rate = 0.1) isa Probabilities
+    @test distribution(x, Standard(0.27), 3; sampling = Full()) isa Probabilities
+    @test distribution(x, Standard(0.27; metric = Cityblock()), 3) isa Probabilities
+    @test distribution(x, Standard(0.27; metric = Cityblock()), 3; rate = 0.1) isa Probabilities
+    @test distribution(x, Standard(0.27; metric = Cityblock()), 3; sampling = Full()) isa Probabilities
+    @test distribution(x, Corridor(0.05, 0.27), 3) isa Probabilities
+    @test distribution(x, Corridor(0.05, 0.27), 3; rate = 0.1) isa Probabilities
+    @test distribution(x, Corridor(0.05, 0.27), 3; sampling = Full()) isa Probabilities
+    @test distribution(x, Corridor(0.05, 0.27; metric = Cityblock()), 3) isa Probabilities
+    @test distribution(x, Corridor(0.05, 0.27; metric = Cityblock()), 3; rate = 0.1) isa Probabilities
+    @test distribution(x, Corridor(0.05, 0.27; metric = Cityblock()), 3; sampling = Full()) isa Probabilities
 
-    @test dist_1 isa Probabilities
-    @test dist_2 isa Probabilities
+    @test distribution(x, Rect(Standard(0.27), 2)) isa Probabilities
+    @test distribution(x, Rect(Standard(0.27), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, Rect(Standard(0.27), 2); sampling = Full()) isa Probabilities
+    @test distribution(x, Rect(Standard(0.27; metric = Cityblock()), 2)) isa Probabilities
+    @test distribution(x, Rect(Standard(0.27; metric = Cityblock()), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, Rect(Standard(0.27; metric = Cityblock()), 2); sampling = Full()) isa Probabilities
+    @test distribution(x, Triangle(Standard(0.27), 2)) isa Probabilities
+    @test distribution(x, Triangle(Standard(0.27), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, Triangle(Standard(0.27), 2); sampling = Full()) isa Probabilities
+    @test distribution(x, Triangle(Standard(0.27; metric = Cityblock()), 2)) isa Probabilities
+    @test distribution(x, Triangle(Standard(0.27; metric = Cityblock()), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, Triangle(Standard(0.27; metric = Cityblock()), 2); sampling = Full()) isa Probabilities
+    @test distribution(x, Diagonal(Standard(0.27), 2)) isa Probabilities
+    @test distribution(x, Diagonal(Standard(0.27), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, Diagonal(Standard(0.27), 2); sampling = Full()) isa Probabilities
+    @test distribution(x, Diagonal(Standard(0.27; metric = Cityblock()), 2)) isa Probabilities
+    @test distribution(x, Diagonal(Standard(0.27; metric = Cityblock()), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, Diagonal(Standard(0.27; metric = Cityblock()), 2); sampling = Full()) isa Probabilities
+    @test distribution(x, Rect(Corridor(0.05, 0.27), 2)) isa Probabilities
+    @test distribution(x, Rect(Corridor(0.05, 0.27), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, Rect(Corridor(0.05, 0.27), 2); sampling = Full()) isa Probabilities
+    @test distribution(x, Rect(Corridor(0.05, 0.27; metric = Cityblock()), 2)) isa Probabilities
+    @test distribution(x, Rect(Corridor(0.05, 0.27; metric = Cityblock()), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, Rect(Corridor(0.05, 0.27; metric = Cityblock()), 2); sampling = Full()) isa Probabilities
+    @test distribution(x, Triangle(Corridor(0.05, 0.27), 2)) isa Probabilities
+    @test distribution(x, Triangle(Corridor(0.05, 0.27), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, Triangle(Corridor(0.05, 0.27), 2); sampling = Full()) isa Probabilities
+    @test distribution(x, Triangle(Corridor(0.05, 0.27; metric = Cityblock()), 2)) isa Probabilities
+    @test distribution(x, Triangle(Corridor(0.05, 0.27; metric = Cityblock()), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, Triangle(Corridor(0.05, 0.27; metric = Cityblock()), 2); sampling = Full()) isa Probabilities
+    @test distribution(x, Diagonal(Corridor(0.05, 0.27), 2)) isa Probabilities
+    @test distribution(x, Diagonal(Corridor(0.05, 0.27), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, Diagonal(Corridor(0.05, 0.27), 2); sampling = Full()) isa Probabilities
+    @test distribution(x, Diagonal(Corridor(0.05, 0.27; metric = Cityblock()), 2)) isa Probabilities
+    @test distribution(x, Diagonal(Corridor(0.05, 0.27; metric = Cityblock()), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, Diagonal(Corridor(0.05, 0.27; metric = Cityblock()), 2); sampling = Full()) isa Probabilities
 
-    @test begin
-        
-        outcomes_1 = outcomes(dist_1)
-        outcomes_2 = outcomes(dist_2)
+    @test distribution(x, y, 0.27, 3; rate = 0.1) isa Probabilities
+    @test distribution(x, y, 0.27, 3; sampling = Full()) isa Probabilities
+    @test distribution(x, y, 0.27, 3; metric = Cityblock()) isa Probabilities
+    @test distribution(x, y, 0.27, 3; rate = 0.1, metric = Cityblock()) isa Probabilities
+    @test distribution(x, y, 0.27, 3; sampling = Full(), metric = Cityblock()) isa Probabilities
 
-        @test length(outcomes_1) == length(outcomes_2)
+    @test distribution(x, y, Standard(0.27), 3) isa Probabilities
+    @test distribution(x, y, Standard(0.27), 3; rate = 0.1) isa Probabilities
+    @test distribution(x, y, Standard(0.27), 3; sampling = Full()) isa Probabilities
+    @test distribution(x, y, Standard(0.27; metric = Cityblock()), 3) isa Probabilities
+    @test distribution(x, y, Standard(0.27; metric = Cityblock()), 3; rate = 0.1) isa Probabilities
+    @test distribution(x, y, Standard(0.27; metric = Cityblock()), 3; sampling = Full()) isa Probabilities
+    @test distribution(x, y, Corridor(0.05, 0.27), 3) isa Probabilities
+    @test distribution(x, y, Corridor(0.05, 0.27), 3; rate = 0.1) isa Probabilities
+    @test distribution(x, y, Corridor(0.05, 0.27), 3; sampling = Full()) isa Probabilities
+    @test distribution(x, y, Corridor(0.05, 0.27; metric = Cityblock()), 3) isa Probabilities
+    @test distribution(x, y, Corridor(0.05, 0.27; metric = Cityblock()), 3; rate = 0.1) isa Probabilities
+    @test distribution(x, y, Corridor(0.05, 0.27; metric = Cityblock()), 3; sampling = Full()) isa Probabilities
 
-        for i in eachindex(outcomes_1)
-            if abs(dist_1[i] - dist_2[i]) ≥ TOLERANCE_DIST
-                return false
-            end
-        end
-
-        true
-    end
-
-    @test_nothing distribution(x, 0.27, 2; sampling = Full())
+    @test distribution(x, y, Rect(Standard(0.27), 2)) isa Probabilities
+    @test distribution(x, y, Rect(Standard(0.27), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, y, Rect(Standard(0.27), 2); sampling = Full()) isa Probabilities
+    @test distribution(x, y, Rect(Standard(0.27; metric = Cityblock()), 2)) isa Probabilities
+    @test distribution(x, y, Rect(Standard(0.27; metric = Cityblock()), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, y, Rect(Standard(0.27; metric = Cityblock()), 2); sampling = Full()) isa Probabilities
+    @test distribution(x, y, Triangle(Standard(0.27), 2)) isa Probabilities
+    @test distribution(x, y, Triangle(Standard(0.27), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, y, Triangle(Standard(0.27), 2); sampling = Full()) isa Probabilities
+    @test distribution(x, y, Triangle(Standard(0.27; metric = Cityblock()), 2)) isa Probabilities
+    @test distribution(x, y, Triangle(Standard(0.27; metric = Cityblock()), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, y, Triangle(Standard(0.27; metric = Cityblock()), 2); sampling = Full()) isa Probabilities
+    @test distribution(x, y, Diagonal(Standard(0.27), 2)) isa Probabilities
+    @test distribution(x, y, Diagonal(Standard(0.27), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, y, Diagonal(Standard(0.27), 2); sampling = Full()) isa Probabilities
+    @test distribution(x, y, Diagonal(Standard(0.27; metric = Cityblock()), 2)) isa Probabilities
+    @test distribution(x, y, Diagonal(Standard(0.27; metric = Cityblock()), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, y, Diagonal(Standard(0.27; metric = Cityblock()), 2); sampling = Full()) isa Probabilities
+    @test distribution(x, y, Rect(Corridor(0.05, 0.27), 2)) isa Probabilities
+    @test distribution(x, y, Rect(Corridor(0.05, 0.27), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, y, Rect(Corridor(0.05, 0.27), 2); sampling = Full()) isa Probabilities
+    @test distribution(x, y, Rect(Corridor(0.05, 0.27; metric = Cityblock()), 2)) isa Probabilities
+    @test distribution(x, y, Rect(Corridor(0.05, 0.27; metric = Cityblock()), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, y, Rect(Corridor(0.05, 0.27; metric = Cityblock()), 2); sampling = Full()) isa Probabilities
+    @test distribution(x, y, Triangle(Corridor(0.05, 0.27), 2)) isa Probabilities
+    @test distribution(x, y, Triangle(Corridor(0.05, 0.27), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, y, Triangle(Corridor(0.05, 0.27), 2); sampling = Full()) isa Probabilities
+    @test distribution(x, y, Triangle(Corridor(0.05, 0.27; metric = Cityblock()), 2)) isa Probabilities
+    @test distribution(x, y, Triangle(Corridor(0.05, 0.27; metric = Cityblock()), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, y, Triangle(Corridor(0.05, 0.27; metric = Cityblock()), 2); sampling = Full()) isa Probabilities
+    @test distribution(x, y, Diagonal(Corridor(0.05, 0.27), 2)) isa Probabilities
+    @test distribution(x, y, Diagonal(Corridor(0.05, 0.27), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, y, Diagonal(Corridor(0.05, 0.27), 2); sampling = Full()) isa Probabilities
+    @test distribution(x, y, Diagonal(Corridor(0.05, 0.27; metric = Cityblock()), 2)) isa Probabilities
+    @test distribution(x, y, Diagonal(Corridor(0.05, 0.27; metric = Cityblock()), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, y, Diagonal(Corridor(0.05, 0.27; metric = Cityblock()), 2); sampling = Full()) isa Probabilities
 end
 
-@testset "distributions: AbstractArray + CPUCore" begin
-    x = rand(1, 100, 100)
-    y = rand(1, 100, 100)
+@testset "spatial data" begin
+    x = rand(1, 20, 20)
+    y = rand(1, 10, 10)
+    core = CPUCore(Rect(Standard(0.27), (2, 1, 1, 2)), SRandom(0.05))
 
-    @test_nothing distribution(x, y, Rect(Standard(0.27), (2, 1, 2, 1)))
-    @test_nothing distribution(x, Rect(Standard(0.27), (2, 1, 2, 1)))
-
-    dist_1 = distribution(x, Rect(Standard(0.27), (2, 1, 2, 1)))
-    dist_2 = distribution(x, Rect(Standard(0.27), (2, 1, 2, 1)))
-
-    @test dist_1 isa Probabilities
-    @test dist_2 isa Probabilities
-
-    @test begin
-        
-        outcomes_1 = outcomes(dist_1)
-        outcomes_2 = outcomes(dist_2)
-
-        @test length(outcomes_1) == length(outcomes_2)
-
-        for i in eachindex(outcomes_1)
-            if abs(dist_1[i] - dist_2[i]) ≥ TOLERANCE_DIST
-                return false
-            end
-        end
-
-        true
-    end
-end
-
-@testset "motif shapes (with CPUCore)" begin
-    @testset "RP and CRP" begin
-        x = StateSpaceSet(rand(1000))
-        y = StateSpaceSet(rand(2000))
-
-        @test_nothing distribution(x, Rect(Standard(0.27), 2))
-        @test_nothing distribution(x, Rect(Standard(0.27), 3))
-        @test_nothing distribution(x, Rect(3, 2))
-        @test_nothing distribution(x, Triangle(Standard(0.27), 2))
-        @test_nothing distribution(x, Triangle(Standard(0.27), 3))
-        @test_nothing distribution(x, Diagonal(Standard(0.27), 2))
-        @test_nothing distribution(x, Diagonal(Standard(0.27), 3))
-
-        @test_nothing distribution(x, y, Rect(Standard(0.27), 2))
-        @test_nothing distribution(x, y, Rect(Standard(0.27), 3))
-        @test_nothing distribution(x, y, Triangle(Standard(0.27), 2))
-        @test_nothing distribution(x, y, Triangle(Standard(0.27), 3))
-        @test_nothing distribution(x, y, Diagonal(Standard(0.27), 2))
-        @test_nothing distribution(x, y, Diagonal(Standard(0.27), 3))
-    end
-    
-    @testset "SRP and CSRP" begin
-        x = rand(1, 100, 100)
-        y = rand(1, 100, 100)
-
-        @test_nothing distribution(x, Rect(Standard(0.27), (2, 2, 1, 1)))
-        @test_nothing distribution(x, Rect(Standard(0.27), (3, 3, 1, 1)))
-        @test_nothing distribution(x, Diagonal(Standard(0.27), 2))
-        @test_nothing distribution(x, Diagonal(Standard(0.27), 3))
-
-        @test_nothing distribution(x, y, Rect(Standard(0.27), (2, 2, 1, 1)))
-        @test_nothing distribution(x, y, Rect(Standard(0.27), (3, 3, 1, 1)))
-        @test_nothing distribution(x, y, Diagonal(Standard(0.27), 2))
-        @test_nothing distribution(x, y, Diagonal(Standard(0.27), 3))
-    end
-end
-
-@testset "recurrence expressions (with CPUCore)" begin
-    @test Standard(0.27) isa RecurrenceExpression
-    @test Standard(0.27; metric = Cityblock()) isa RecurrenceExpression
-    @test Corridor(0.05, 0.27) isa RecurrenceExpression
-    @test Corridor(0.05, 0.27; metric = Cityblock()) isa RecurrenceExpression
-    
-    @testset "RP and CRP" begin
-        x = StateSpaceSet(rand(1000))
-        y = StateSpaceSet(rand(2000))
-        @test_nothing distribution(x, Standard(0.27), 2)
-        @test_nothing distribution(x, Standard(0.27; metric = Cityblock()), 2)
-        @test_nothing distribution(x, Corridor(0.05, 0.27), 2)
-        @test_nothing distribution(x, Corridor(0.05, 0.27; metric = Cityblock()), 2)
-
-        @test_nothing distribution(x, y, Standard(0.27), 2)
-        @test_nothing distribution(x, y, Standard(0.27; metric = Cityblock()), 2)
-        @test_nothing distribution(x, y, Corridor(0.05, 0.27), 2)
-        @test_nothing distribution(x, y, Corridor(0.05, 0.27; metric = Cityblock()), 2)
-    end
-
-    @testset "SRP and CSRP" begin
-        x = rand(1, 100, 100)
-        y = rand(1, 100, 100)
-
-        @test_nothing distribution(x, Rect(Standard(0.27), (2, 2, 1, 2)))
-        @test_nothing distribution(x, Rect(Standard(0.27; metric = Cityblock()), (2, 2, 1, 2)))
-        @test_nothing distribution(x, Rect(Corridor(0.05, 0.27), (2, 2, 1, 2)))
-        @test_nothing distribution(x, Rect(Corridor(0.05, 0.27; metric = Cityblock()), (2, 2, 1, 2)))
-
-        @test_nothing distribution(x, y, Rect(Standard(0.27), (2, 2, 1, 2)))
-        @test_nothing distribution(x, y, Rect(Standard(0.27; metric = Cityblock()), (2, 2, 1, 2)))
-        @test_nothing distribution(x, y, Rect(Corridor(0.05, 0.27), (2, 2, 1, 2)))
-        @test_nothing distribution(x, y, Rect(Corridor(0.05, 0.27; metric = Cityblock()), (2, 2, 1, 2)))
-    end
-end
-
-@testset "sampling mode (CPU backend)" begin
-    @testset "RP and CRP" begin
-        x = StateSpaceSet(rand(1000))
-        y = StateSpaceSet(rand(2000))
-        @test_nothing distribution(x, Standard(0.27), 2; sampling = SRandom(0.05))
-        @test_nothing distribution(x, Standard(0.27), 2; sampling = SRandom(500))
-        @test_nothing distribution(x, Standard(0.27), 2; sampling = Full())
-
-        @test_nothing distribution(x, y, Standard(0.27), 2; sampling = SRandom(0.05))
-        @test_nothing distribution(x, y, Standard(0.27), 2; sampling = SRandom(500))
-        @test_nothing distribution(x, y, Standard(0.27), 2; sampling = Full())
-    end
-
-    @testset "SRP and CSRP" begin
-        x = rand(1, 100, 100)
-        y = rand(1, 100, 100)
-
-        @test_nothing distribution(x, Rect(Standard(0.27), (2, 2, 1, 2)); sampling = SRandom(0.05))
-        @test_nothing distribution(x, Rect(Standard(0.27), (2, 2, 1, 2)); sampling = SRandom(500))
-
-        @test_nothing distribution(x, y, Rect(Standard(0.27), (2, 2, 1, 2)); sampling = SRandom(0.05))
-        @test_nothing distribution(x, y, Rect(Standard(0.27), (2, 2, 1, 2)); sampling = SRandom(500))
-    end
+    @test distribution(x, Rect(Standard(0.27), (2, 1, 1, 2))) isa Probabilities
+    @test distribution(x, Rect(Standard(0.27), (2, 1, 1, 2)); rate = 0.1) isa Probabilities
+    @test distribution(x, Rect(Standard(0.27; metric = Cityblock()), (2, 1, 1, 2))) isa Probabilities
+    @test distribution(x, Rect(Standard(0.27; metric = Cityblock()), (2, 1, 1, 2)); rate = 0.1) isa Probabilities
+    @test distribution(x, Diagonal(Standard(0.27), 2)) isa Probabilities
+    @test distribution(x, Diagonal(Standard(0.27), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, Diagonal(Standard(0.27; metric = Cityblock()), 2)) isa Probabilities
+    @test distribution(x, Diagonal(Standard(0.27; metric = Cityblock()), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, Rect(Corridor(0.05, 0.27), (2, 1, 1, 2))) isa Probabilities
+    @test distribution(x, Rect(Corridor(0.05, 0.27), (2, 1, 1, 2)); rate = 0.1) isa Probabilities
+    @test distribution(x, Rect(Corridor(0.05, 0.27; metric = Cityblock()), (2, 1, 1, 2))) isa Probabilities
+    @test distribution(x, Rect(Corridor(0.05, 0.27; metric = Cityblock()), (2, 1, 1, 2)); rate = 0.1) isa Probabilities
+    @test distribution(x, Diagonal(Corridor(0.05, 0.27), 2)) isa Probabilities
+    @test distribution(x, Diagonal(Corridor(0.05, 0.27), 2); rate = 0.1) isa Probabilities
+    @test distribution(x, Diagonal(Corridor(0.05, 0.27; metric = Cityblock()), 2)) isa Probabilities
+    @test distribution(x, Diagonal(Corridor(0.05, 0.27; metric = Cityblock()), 2); rate = 0.1) isa Probabilities
 end

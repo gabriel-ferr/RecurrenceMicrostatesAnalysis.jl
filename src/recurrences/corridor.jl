@@ -39,6 +39,8 @@ struct Corridor{F <: Real, M <: Metric} <: RecurrenceExpression
 end
 #.........................................................................................
 function Corridor(ε_min::Real, ε_max::Real; metric::Metric = DEFAULT_METRIC)
+    @assert ε_min >= 0 throw(ArgumentError("threshold must be greater than zero."))
+    @assert ε_min < ε_max throw(ArgumentError("ε_min must be less than ε_max."))
     return Corridor(ε_min, ε_max, metric)
 end
 

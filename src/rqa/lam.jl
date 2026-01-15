@@ -98,7 +98,8 @@ function measure(::Laminarity, dist::Probabilities)
         rr = measure(RecurrenceRate(), dist)
         return 1 - ((1/rr) * dist[3])
     else
-        error("Laminarity must be computed using square or line motifs with n = 3.")
+        msg = "Laminarity must be computed using square or line microstates with n = 3."
+        throw(ArgumentError(msg))
     end
 end
 #.........................................................................................

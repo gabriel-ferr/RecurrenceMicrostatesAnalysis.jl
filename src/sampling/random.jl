@@ -29,13 +29,13 @@ struct SRandom{F <: Real} <: SamplingMode
 end
 #.........................................................................................
 function SRandom(num_samples::Int)
-    @assert num_samples ≥ 1 "The number of samples must be greater than 1."
+    @assert num_samples ≥ 1 throw(ArgumentError("number of samples must be greater than 1."))
     return SRandom{Int}(num_samples)
 end 
 #.........................................................................................
 function SRandom(ratio::Union{Float32, Float64})
-    @assert ratio > 0 "The sampling ratio must be greater than 0."
-    @assert ratio ≤ 1.0 "The sampling ratio must be smaller than 1."
+    @assert ratio > 0 throw(ArgumentError("sampling ratio must be greater than 0."))
+    @assert ratio ≤ 1.0 throw(ArgumentError("sampling ratio must be smaller than 1."))
 
     return SRandom{typeof(ratio)}(ratio)
 end

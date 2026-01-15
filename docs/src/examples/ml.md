@@ -29,7 +29,7 @@ function lorenz!(u, p, t)
 end
 ```
 ```@example flux
-function lorenz_trajectory(σ, ρ, β; u0 = rand(3), t = 400.0, Ttr = 1200.0, Δt_sample = 0.2)
+function lorenz_trajectory(σ, ρ, β; u0 = rand(3), t = 250.0, Ttr = 1200.0, Δt_sample = 0.2)
     p = (σ, ρ, β)
     cds =  ContinuousDynamicalSystem(lorenz!, u0, p)
     x, _ = trajectory(cds, t; Ttr = Ttr, Δt = Δt_sample)
